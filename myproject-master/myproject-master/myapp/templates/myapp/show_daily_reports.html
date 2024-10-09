@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Report</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Daily Reports</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>睡眠時間</th>
+                <th>起床時間</th>
+                <th>睡眠の質</th>
+                <th>昨晩、夕食を食べたか</th>
+                <th>今朝、朝食を食べたか</th>
+                <th>常用している薬は飲んだか</th>
+                <th>今の状態</th>
+                <th>今の状態で「悪い」もしくは「とても悪い」場合、今状態に影響していること</th>
+                <th>不安感</th>
+                <th>一番近い感情</th>
+                <th>周囲の人と話せるか</th>
+                <th>体の動き</th>
+                <th>集中力</th>
+                <th>体の不調</th>
+                <th>自己肯定感</th>
+                <th>周囲の誰かを頼っていいと思えるか</th>
+                <th>周囲の誰かに必要されていると思えるか</th>
+                <th>そのほかに気になる症状</th>
+                <th>仕事に対して配慮が必要か</th>
+                <th>仕事に対して配慮が必要かの</th>
+                <th>伝えたいこと</th>
+                <th>回復ルーティン</th>
+                <th>自身の余裕度</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>{{ report.id }}</td>
+                <td>{{ report.name }}</td>
+                <td>{{ report.sleep_time }}</td>
+                <td>{{ report.wake_time }}</td>
+                <td>{{ report.sleep_quality }}</td>
+                <td>{{ report.had_dinner_yesterday }}</td>
+                <td>{{ report.had_breakfast_today }}</td>
+                <td>{{ report.medicine_time }}</td>
+                <td>{{ report.current_condition }}</td>
+                <td>{{ report.current_condition_other }}</td>
+                <td>{{ report.anxiety_level }}</td>
+                <td>{{ report.current_emotion }}</td>
+                <td>{{ report.communication_willingness }}</td>
+                <td>{{ report.physical_condition }}</td>
+                <td>{{ report.concentration_level }}</td>
+                <td>{{ report.physical_discomfort }}</td>
+                <td>{{ report.self_esteem }}</td>
+                <td>{{ report.willingness_to_depend }}</td>
+                <td>{{ report.feeling_needed }}</td>
+                <td>{{ report.other_symptoms }}</td>
+                <td>{{ report.need_work_accommodation }}</td>
+                <td>{{ report.need_work_accommodation_other }}</td>
+                <td>{{ report.message }}</td>
+                <td>{{ report.recovery_routine }}</td>
+                <td>{{ report.emotional_stability_after_self }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
