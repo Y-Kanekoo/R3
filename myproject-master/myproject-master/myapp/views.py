@@ -1,12 +1,20 @@
 # myapp/views.py
 
-from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .models import DailyReportMorning
-from django.http import HttpResponse
+from .serializers import DailyReportMorningSerializer
 
-def show_daily_reports(request):
-    # 例: reportsのデータを取得する処理
-    reports =  DailyReportMorning.objects.all()  # reportsのリストを取得するロジックを追加
-    return render(request, 'myapp/show_daily_reports.html', {'reports': reports})  # アプリ名を含めて指定
-def Daily_report_select(request):
-    return HttpResponse("This is a new page!")
+class DailyReportMorningList(APIView):
+    def get(self, request):
+        reports = DailyReportMorning.objects.all()
+        serializer = DailyReportMorningSerializer(reports, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = DailyReportMorningSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
