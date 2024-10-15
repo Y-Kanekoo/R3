@@ -1,12 +1,8 @@
-from django.db import models
-
-# Create your models here.
-
 # myapp/models.py
-
 from django.db import models
 
 class DailyReportMorning(models.Model):
+    # 必要なフィールドを定義
     name = models.CharField(max_length=255)
     sleep_time = models.TimeField()
     wake_time = models.TimeField()
@@ -15,7 +11,7 @@ class DailyReportMorning(models.Model):
     had_breakfast_today = models.IntegerField()
     medicine_time = models.IntegerField()
     current_condition = models.IntegerField()
-    current_condition_other = models.TextField(blank=True, null=True)
+    current_condition_other = models.TextField()
     anxiety_level = models.IntegerField()
     current_emotion = models.IntegerField()
     communication_willingness = models.IntegerField()
@@ -25,17 +21,12 @@ class DailyReportMorning(models.Model):
     self_esteem = models.IntegerField()
     willingness_to_depend = models.IntegerField()
     feeling_needed = models.IntegerField()
-    other_symptoms = models.TextField(blank=True, null=True)
+    other_symptoms = models.TextField()
     need_work_accommodation = models.IntegerField()
-    need_work_accommodation_other = models.TextField(blank=True, null=True)
-    message = models.TextField(blank=True, null=True)
-    recovery_routine = models.TextField(blank=True, null=True)
+    need_work_accommodation_other = models.TextField()
+    message = models.TextField()
+    recovery_routine = models.TextField()
     emotional_stability_after_self = models.IntegerField()
-
 
     class Meta:
         db_table = 'Daily_report_morning'  # テーブル名を指定
-
-        
-    def __str__(self):
-        return self.name
