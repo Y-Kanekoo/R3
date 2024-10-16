@@ -84,7 +84,7 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'test1',  # データベース名
+        'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
         'PASSWORD': 'Sho1101tibi',  # パスワード
         'HOST': 'localhost',  # ホスト (通常は'localhost')
