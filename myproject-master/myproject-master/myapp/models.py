@@ -1,32 +1,41 @@
 # myapp/models.py
 from django.db import models
 
-class DailyReportMorning(models.Model):
-    # 必要なフィールドを定義
+
+class Employee(models.Model):
     name = models.CharField(max_length=255)
-    sleep_time = models.TimeField()
-    wake_time = models.TimeField()
-    sleep_quality = models.IntegerField()
-    had_dinner_yesterday = models.IntegerField()
-    had_breakfast_today = models.IntegerField()
-    medicine_time = models.IntegerField()
-    current_condition = models.IntegerField()
-    current_condition_other = models.TextField()
-    anxiety_level = models.IntegerField()
-    current_emotion = models.IntegerField()
-    communication_willingness = models.IntegerField()
-    physical_condition = models.IntegerField()
-    concentration_level = models.IntegerField()
-    physical_discomfort = models.IntegerField()
-    self_esteem = models.IntegerField()
-    willingness_to_depend = models.IntegerField()
-    feeling_needed = models.IntegerField()
-    other_symptoms = models.TextField()
-    need_work_accommodation = models.IntegerField()
-    need_work_accommodation_other = models.TextField()
-    message = models.TextField()
-    recovery_routine = models.TextField()
-    emotional_stability_after_self = models.IntegerField()
+    employee_type = models.CharField(max_length=10, choices=[('admin', 'Admin'), ('general', 'General')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'Daily_report_morning'  # テーブル名を指定
+        db_table = 'employees'  # テーブル名を指定
+
+class Questionnaire(models.Model):
+    title = models.CharField(max_length=255)
+    type = models.CharField(max_length=10, choices=[('morning', 'Morning'), ('evening', 'Evening')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'questionnaires'  # テーブル名を指定
+
+class DailyReport(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    report_datetime = models.DateTimeField()
+    report_type = models.CharField(max_length=10, choices=[('morning', 'Morning'), ('evening', 'Evening')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'daily_reports'  # テーブル名を指定
+
+class DailyReportAnswer(models.Model):
+    daily_report = models.ForeignKey(DailyReport, on_delete=models.CASCADE)
+    questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
+    answer = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'daily_report_answers'  # テーブル名を指定
