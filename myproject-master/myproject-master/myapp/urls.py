@@ -5,4 +5,4 @@ from .views import DailyReportMorningList
 urlpatterns = [
     path('api/reports/', DailyReportMorningList.as_view(), name='daily_report_morning_list'),
 ]
-# 今変更
+# 今変更kodama
