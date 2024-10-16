@@ -6,4 +6,3 @@ class DailyReportMorningSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyReportMorning
         fields = '__all__'  # 全てのフィールドをシリアライズ
-# aaa
