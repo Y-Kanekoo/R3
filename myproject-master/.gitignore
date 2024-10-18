@@ -1,7 +1,5 @@
-# Pythonのバイトコードを無視
-__pycache__/
 *.pyc
- 
+__pycache__/
 # 仮想環境を無視
 env/
 venv/
