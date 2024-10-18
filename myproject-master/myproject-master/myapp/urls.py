@@ -1,7 +1,7 @@
 # myapp/urls.py
 from django.urls import path
 from .views import EmployeesList,show_employees,QuestionnairesList,show_questionnaires,Daily_reportsList,show_daily_reports,Daily_report_answersList,show_report_answers
-
+from . import views
 
 urlpatterns = [
 
@@ -14,7 +14,6 @@ urlpatterns = [
 
     path('api/Daily_reportsList/', Daily_reportsList.as_view(), name='Daily_reports_List'), #日報リスト
     path('show_daily_reports/', show_daily_reports, name='show_daily_reports'),
-
 
     path('api/Daily_report_answersList/', Daily_report_answersList.as_view(), name='Daily_report_answers_List'), #日報の回答リスト
     path('show_report_answers/', show_report_answers, name='show_report_answers'),
