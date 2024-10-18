@@ -127,6 +127,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+# 静的ファイルが収集されるディレクトリを指定
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# 他の静的ファイルの設定
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # プロジェクト内の静的ファイル
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

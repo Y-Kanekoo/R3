@@ -1,57 +1,57 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily Reports</title>
-    <link rel="stylesheet" href="../myapp/style/show_daily_report_style.css" type="text/css">
-</head>
-<body>
+   {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/show_daily_report_style.css' %}" type="text/css">
 
+    
+  </head>
+  <body>
     <header>
-        <h1>日報</h1>
-        <nav>
-            <ul class="menu">
-                <li><a href="{% url 'show_employees' %}">社員リスト</a></li>
-                <li><a href="{% url 'show_questionnaires' %}">アンケートリスト</a></li>
-            </ul>
-        </nav>
+      <h1>日報</h1>
+      <nav>
+        <ul class="menu">
+          <li><a href="{% url 'show_employees' %}">社員リスト</a></li>
+          <li>
+            <a href="{% url 'show_questionnaires' %}">アンケートリスト</a>
+          </li>
+        </ul>
+      </nav>
     </header>
 
     <table border="1">
-        <thead>
-            <tr>
-                <th>レポートID</th>
-                <th>従業員ID</th>
-                <th>レポート日時</th>
-                <th>レポートタイプ</th>
-                <th>作成日時</th>
-                <th>更新日時</th>
-                {% for question in questionnaires %}
-                    <th>{{ question.title }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for report in reports %}
-                <tr>
-                    <td>{{ report.id }}</td>
-                    <td>{{ report.employee }}</td>
-                    <td>{{ report.report_datetime }}</td>
-                    <td>{{ report.report_type }}</td>
-                    <td>{{ report.created_at }}</td>
-                    <td>{{ report.updated_at }}</td>
-                    
-                    {% for answer in report.answers %}
-                    <td>{{ answer.answer }}</td>
-                    {% endfor %}
-                    
-                </tr>
-            {% endfor %}
-        </tbody>
+      <thead>
+        <tr>
+          <th>レポートID</th>
+          <th>従業員ID</th>
+          <th>レポート日時</th>
+          <th>レポートタイプ</th>
+          <th>作成日時</th>
+          <th>更新日時</th>
+          {% for question in questionnaires %}
+          <th>{{ question.title }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+        <tr>
+          <td>{{ report.id }}</td>
+          <td>{{ report.employee }}</td>
+          <td>{{ report.report_datetime }}</td>
+          <td>{{ report.report_type }}</td>
+          <td>{{ report.created_at }}</td>
+          <td>{{ report.updated_at }}</td>
+
+          {% for answer in report.answers %}
+          <td>{{ answer.answer }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
-<!-- aaa -->
-    
-    
-</body>
+  </body>
 </html>
