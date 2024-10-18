@@ -5,17 +5,6 @@ from .serializers import EmployeesSerializer,QuestionnairesSerializer,DailyRepor
 from django.shortcuts import render
 import requests
 
-# class DailyReportMorningList(generics.ListAPIView):
-#     queryset = DailyReportMorning.objects.all()
-#     serializer_class = DailyReportMorningSerializer
-
-
-# # APIからデータを取得し、テンプレートに表示するためのビュー
-# def show_daily_reports(request):
-#     # ローカルサーバー上のAPIエンドポイントからデータを取得
-#     response = requests.get('http://127.0.0.1:8000/api/reports/')
-#     data = response.json()  # APIから取得したデータをJSON形式で読み込む
-#     return render(request, 'myapp/show_daily_reports.html', {'reports': data})
 
 
 class EmployeesList(generics.ListAPIView):
@@ -26,8 +15,8 @@ class EmployeesList(generics.ListAPIView):
 def show_employees(request):
     # ローカルサーバー上のAPIエンドポイントからデータを取得
     response = requests.get('http://127.0.0.1:8000/api/EmployeesList/')
-    data = response.json()  # APIから取得したデータをJSON形式で読み込む
-    return render(request, 'myapp/show_employees.html', {'employees': data})
+    employees = response.json()  # APIから取得したデータをJSON形式で読み込む
+    return render(request, 'myapp/show_employees.html', {'employees': employees})
 
 class QuestionnairesList(generics.ListAPIView):
     queryset = Questionnaire.objects.all()
@@ -35,8 +24,8 @@ class QuestionnairesList(generics.ListAPIView):
 
 def show_questionnaires(request):
     response = requests.get('http://127.0.0.1:8000/api/QuestionnairesList/')
-    data = response.json()  # APIから取得したデータをJSON形式で読み込む
-    return render(request, 'myapp/show_questionnaires.html', {'questionnaires': data})
+    questionnaires = response.json()  # APIから取得したデータをJSON形式で読み込む
+    return render(request, 'myapp/show_questionnaires.html', {'questionnaires': questionnaires})
 
 
 class Daily_report_answersList(generics.ListAPIView):
@@ -45,8 +34,8 @@ class Daily_report_answersList(generics.ListAPIView):
 
 def show_report_answers(request):
     response = requests.get('http://127.0.0.1:8000/api/Daily_report_answersList/')
-    data = response.json()  # APIから取得したデータをJSON形式で読み込む
-    return render(request, 'myapp/show_report_answers.html', {'answers': data})
+    answers = response.json()  # APIから取得したデータをJSON形式で読み込む
+    return render(request, 'myapp/show_report_answers.html', {'answers': answers})
 
 
 class Daily_reportsList(generics.ListAPIView):
@@ -54,7 +43,35 @@ class Daily_reportsList(generics.ListAPIView):
     serializer_class = DailyReportsSerializer
 
 def show_daily_reports(request):
-    response = requests.get('http://127.0.0.1:8000/api/Daily_reportsList/')
-    question_response = requests.get('http://127.0.0.1:8000/api/QuestionnairesList/')
-    data = response.json()  # APIから取得したデータをJSON形式で読み込む
-    return render(request, 'myapp/show_daily_reports.html', {'reports': data})
+    # レポートを取得
+    reports = DailyReport.objects.select_related('employee').all()
+    # 質問を取得
+    questionnaires = Questionnaire.objects.all().order_by('id')  # 質問を順番に並べる
+    # 回答を取得して質問の順にソート
+    answers = DailyReportAnswer.objects.select_related('questionnaire').order_by('questionnaire__id')
+
+    # レポートごとに回答を整理
+    report_data = []
+    for report in reports:
+        report_answers = [
+            {'question': answer.questionnaire.title, 'answer': answer.answer}
+            for answer in answers if answer.daily_report_id == report.id
+        ]
+        report_data.append({
+            'id': report.id,
+            'employee': report.employee.name,
+            'report_datetime': report.report_datetime,
+            'report_type': report.report_type,
+            'created_at': report.created_at,
+            'updated_at': report.updated_at,
+            'answers': report_answers  # リストとして回答を保持
+        })
+
+    # テンプレートに渡す
+    return render(request, 'myapp/show_daily_reports.html', {
+        'reports': report_data,
+        'questionnaires': questionnaires,
+    })
+
+
+
