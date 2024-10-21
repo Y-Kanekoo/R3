@@ -42,6 +42,7 @@ class Daily_reportsList(generics.ListAPIView):
     queryset = DailyReport.objects.all()
     serializer_class = DailyReportsSerializer
 
+
 def show_daily_reports(request):
     # レポートを取得
     reports = DailyReport.objects.select_related('employee').all()

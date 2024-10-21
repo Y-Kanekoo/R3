@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('api/Daily_report_answersList/', Daily_report_answersList.as_view(), name='Daily_report_answers_List'), #日報の回答リスト
     path('show_report_answers/', show_report_answers, name='show_report_answers'),
+    
 
-
+    
 ]
