@@ -1,6 +1,6 @@
 # myapp/serializers.py
 from rest_framework import serializers
-from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Threshold
+from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Threshold, Notification
 
 
 class EmployeesSerializer(serializers.ModelSerializer):
@@ -32,3 +32,9 @@ class ThresholdsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Threshold
         fields = '__all___'
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification  # シリアライズ対象のモデル
+        fields = '__all__'  # 全てのフィールドをシリアライズ
