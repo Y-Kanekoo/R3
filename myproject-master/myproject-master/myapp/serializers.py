@@ -7,17 +7,20 @@ class EmployeesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'  # 全てのフィールドをシリアライズ
+        fields = '__all__'  # 全てのフィールドをシリアライズ
 
 
 class QuestionnairesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Questionnaire
         fields = '__all__'  # 全てのフィールドをシリアライズ
+        fields = '__all__'  # 全てのフィールドをシリアライズ
 
 
 class DailyReportsSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyReport
+        fields = '__all__'  # 全てのフィールドをシリアライズ
         fields = '__all__'  # 全てのフィールドをシリアライズ
 
 

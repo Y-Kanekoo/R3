@@ -7,6 +7,8 @@ class Employee(models.Model):
     name = models.CharField(max_length=255)
     employee_type = models.CharField(
         max_length=10, choices=[('admin', 'Admin'), ('general', 'General')])
+    employee_type = models.CharField(
+        max_length=10, choices=[('admin', 'Admin'), ('general', 'General')])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -16,6 +18,8 @@ class Employee(models.Model):
 
 class Questionnaire(models.Model):
     title = models.CharField(max_length=255)
+    type = models.CharField(max_length=10, choices=[(
+        'morning', 'Morning'), ('evening', 'Evening')])
     type = models.CharField(max_length=10, choices=[(
         'morning', 'Morning'), ('evening', 'Evening')])
     created_at = models.DateTimeField(auto_now_add=True)
@@ -28,6 +32,8 @@ class Questionnaire(models.Model):
 class DailyReport(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     report_datetime = models.DateTimeField()
+    report_type = models.CharField(max_length=10, choices=[
+                                   ('morning', 'Morning'), ('evening', 'Evening')])
     report_type = models.CharField(max_length=10, choices=[
                                    ('morning', 'Morning'), ('evening', 'Evening')])
     created_at = models.DateTimeField(auto_now_add=True)
