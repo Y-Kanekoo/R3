@@ -6,6 +6,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from .forms import ThresholdForm
 import requests
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.utils import timezone
+from .forms import LoginForm
 
 
 class EmployeesList(generics.ListAPIView):
@@ -95,9 +100,9 @@ def show_thresholds(request):
 
 
 def threshold_setting_view(request):
-    if not request.user.employee_type == 'admin':
+    if not request.user.employee.employee_type == 'admin':
         # 管理者でない場合、アクセス禁止
-        return HttpResponseForbidden("You are not authorized to set thresholds.")
+        return HttpResponseForbidden("あなたには、権限がありません。")
     if request.method == 'POST':
         form = ThresholdForm(request.POST)
         if form.is_valid():
@@ -174,3 +179,73 @@ def mark_as_read(request, notification_id):
     except Notification.DoesNotExist:
         # 通知が見つからない場合
         return redirect('show_notifications')
+
+
+# セッションの時間制限（例: 30分）
+SESSION_TIMEOUT_MINUTES = 30
+
+# ログインビュー
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            # ユーザー認証
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)  # ログイン
+                request.session['last_activity'] = timezone.now(
+                ).timestamp()  # 最終アクセス時間をセッションに記録
+
+                # ユーザーが従業員かどうかをチェックして遷移先を判別
+                employee = Employee.objects.get(user=user)
+                if employee.employee_type == 'admin':
+                    return redirect('admin_dashboard')  # 管理者用ダッシュボードへリダイレクト
+                else:
+                    # アンケート回答者用ページへリダイレクト
+                    return redirect('employee_dashboard')
+            else:
+                # 認証に失敗した場合の処理
+                return render(request, 'myapp/login.html', {'form': form, 'error': '名前またはパスワードが間違っています。'})
+    else:
+        form = LoginForm()
+
+    return render(request, 'myapp/login.html', {'form': form})
+
+# 自動ログアウトのセッションタイムアウト処理
+
+
+@login_required
+def check_session_timeout(request):
+    last_activity = request.session.get('last_activity', None)
+    if last_activity:
+        # 現在の時間と最終アクセス時間を比較してタイムアウトをチェック
+        now = timezone.now().timestamp()
+        elapsed_time = now - last_activity
+        if elapsed_time > SESSION_TIMEOUT_MINUTES * 60:
+            logout(request)  # セッションが時間制限を超えたらログアウト
+            return redirect('login_view')  # ログイン画面にリダイレクト
+        else:
+            # セッションが有効なら、最終アクセス時間を更新
+            request.session['last_activity'] = now
+
+    # ユーザーがどちらのページにいるか判別
+    employee = Employee.objects.get(user=request.user)
+    if employee.employee_type == 'admin':
+        return redirect('admin_dashboard')
+    else:
+        return redirect('employee_dashboard')
+
+
+@login_required
+def admin_dashboard(request):
+    return render(request, 'admin_dashboard.html')
+
+
+@login_required
+def employee_dashboard(request):
+    return render(request, 'employee_dashboard.html')

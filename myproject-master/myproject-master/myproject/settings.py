@@ -56,7 +56,7 @@ ROOT_URLCONF = "myproject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "myapp/templates"],  # ここでテンプレートディレクトリを指定
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -68,6 +68,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = "myproject.wsgi.application"
 
@@ -132,3 +133,8 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# セッションの有効期間を設定（例: 30分）
+SESSION_COOKIE_AGE = 30 * 60  # 秒数で指定
+SESSION_SAVE_EVERY_REQUEST = True  # 各リクエストでセッションの期限を更新

@@ -1,6 +1,6 @@
 # myapp/urls.py
 from django.urls import path
-from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers, ThresholdsList, show_thresholds, show_notifications, mark_as_read
+from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers, ThresholdsList, show_thresholds, show_notifications, mark_as_read, login_view, check_session_timeout, admin_dashboard, employee_dashboard
 
 
 urlpatterns = [
@@ -33,4 +33,17 @@ urlpatterns = [
     # 通知の既読処理
     path('notifications/mark_as_read/<int:notification_id>/',
          mark_as_read, name='mark_as_read'),
+
+    # ログイン
+    path('login/', login_view, name='login_view'),  # ログインページ
+    path('check_session/', check_session_timeout,
+         name='check_session_timeout'),  # セッションチェック用
+
+]
+
+urlpatterns += [
+    path('admin_dashboard/', admin_dashboard,
+         name='admin_dashboard'),  # 管理者用ダッシュボード
+    path('employee_dashboard/', employee_dashboard,
+         name='employee_dashboard'),  # アンケート回答者用ページ
 ]
