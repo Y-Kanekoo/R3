@@ -1,6 +1,6 @@
 # myapp/urls.py
 from django.urls import path
-from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers, ThresholdsList, show_Thresholds
+from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers, ThresholdsList, show_thresholds, show_notifications, mark_as_read
 
 
 urlpatterns = [
@@ -25,5 +25,12 @@ urlpatterns = [
 
     path('api/ThresholdsList/', ThresholdsList.as_view(),
          name='Thresholds_List'),  # 閾値を設定
-    path('show_Thresholds/', show_Thresholds, name='show_Threshold'),
+    path('show_thresholds/', show_thresholds, name='show_threshold'),
+
+    # 通知の表示
+    path('notifications/', show_notifications, name='show_notifications'),
+
+    # 通知の既読処理
+    path('notifications/mark_as_read/<int:notification_id>/',
+         mark_as_read, name='mark_as_read'),
 ]

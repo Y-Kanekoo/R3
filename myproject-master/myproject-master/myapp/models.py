@@ -114,9 +114,14 @@ class Notification(models.Model):
         return f"Notification for {self.employee.name}: {self.message}"
 
 
-def send_notification(employee, questionnaire, message):
+def send_notification(questionnaire, message):
     # 通知メッセージを作成
-    Notification.objects.create(
-        employee=employee,
-        message=f"アンケート {questionnaire.title}: {message}"
-    )
+    administrators = Employee.objects.filter(
+        employee_type='admin')  # 管理者のみフィルタ
+
+    # すべての管理者に対して通知を送信
+    for admin in administrators:
+        Notification.objects.create(
+            employee=admin,
+            message=f"アンケート {questionnaire.title}: {message}"
+        )

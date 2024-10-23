@@ -147,3 +147,30 @@ def save_daily_report_answer_view(request):
             pass  # しきい値が設定されていない場合は何もしない
 
         return redirect('daily_report_list')
+
+
+def show_notifications(request):
+    # 現在ログインしている管理者の通知を取得
+    notifications = Notification.objects.filter(
+        employee=request.user.employee, is_read=False).order_by('-created_at')
+
+    return render(request, 'myapp/notifications.html', {'notifications': notifications})
+
+# 既読処理のビュー
+
+
+def mark_as_read(request, notification_id):
+    try:
+        # 指定された通知を取得
+        notification = Notification.objects.get(id=notification_id)
+
+        # 通知がログインしているユーザーのものであるか確認
+        if notification.employee == request.user.employee:
+            # 通知を既読に変更
+            notification.is_read = True
+            notification.save()
+
+        return redirect('show_notifications')  # 通知一覧ページにリダイレクト
+    except Notification.DoesNotExist:
+        # 通知が見つからない場合
+        return redirect('show_notifications')
