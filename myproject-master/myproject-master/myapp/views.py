@@ -1,6 +1,6 @@
 # myapp/views.py
 from rest_framework import generics
-from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold
+from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold,QuestionnaireOption
 from .serializers import EmployeesSerializer,QuestionnairesSerializer,DailyReportsSerializer,DailyReportAnswersSerializer
 from django.shortcuts import render
 import requests
@@ -50,6 +50,13 @@ def show_daily_reports(request):
     # 回答を取得して質問の順にソート
     answers = DailyReportAnswer.objects.select_related('questionnaire').order_by('questionnaire__id')
 
+    # 質問の選択肢を取得して辞書に整理
+    options = QuestionnaireOption.objects.all()
+    option_dict = {
+        (option.questionnaire_id, option.option_value): option.option_text
+        for option in options
+    }
+
     # 閾値データを取得して辞書に整理
     thresholds = QuestionnaireThreshold.objects.all()
     threshold_dict = {threshold.questionnaire_id: (threshold.threshold_min, threshold.threshold_max) for threshold in thresholds}
@@ -74,6 +81,9 @@ def show_daily_reports(request):
                     except ValueError:
                         # 数値でない場合は閾値判定をスキップ
                         pass
+
+                # # 回答を選択肢のテキストに変換
+                # answer_text = option_dict.get((answer.questionnaire.id, int(answer.answer)), answer.answer)
 
                 report_answers.append({
                     'question': answer.questionnaire.title,

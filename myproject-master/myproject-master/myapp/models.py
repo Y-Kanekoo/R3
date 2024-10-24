@@ -1,6 +1,4 @@
-# myapp/models.py
 from django.db import models
-
 
 class Employee(models.Model):
     name = models.CharField(max_length=255)
@@ -9,10 +7,8 @@ class Employee(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'employees'  # テーブル名を指定
+        db_table = 'employees'
 
-# myapp/models.py
-# myapp/models.py
 class Questionnaire(models.Model):
     title = models.CharField(max_length=255)
     type = models.CharField(max_length=50)
@@ -20,28 +16,28 @@ class Questionnaire(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
 class QuestionnaireOption(models.Model):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
-    option_text = models.CharField(max_length=255)
-    option_value = models.IntegerField()
+    option_text = models.CharField(max_length=100)  # 選択肢のテキスト（例：'良い'、'悪い'など）
+    option_value = models.IntegerField()  # 選択肢に対応する数値（例：1, 2, 3）
+
+    # class Meta:
+    #     db_table = 'questionnaire_options'
 
     def __str__(self):
-        return self.option_text
-
+        return f'{self.questionnaire.title}: {self.option_text} ({self.option_value})'
 
 class QuestionnaireThreshold(models.Model):
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
     questionnaire = models.ForeignKey('Questionnaire', on_delete=models.CASCADE)
-    threshold_min = models.IntegerField(null=True, blank=True)  # 閾値の最小値
-    threshold_max = models.IntegerField(null=True, blank=True)  # 閾値の最大値
+    threshold_min = models.IntegerField(null=True, blank=True)
+    threshold_max = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'questionnaire_thresholds'  # テーブル名を指定
-        unique_together = ('employee', 'questionnaire')  # 同じ従業員とアンケートに対する重複を防ぐ
+        db_table = 'questionnaire_thresholds'
+        unique_together = ('employee', 'questionnaire')
 
 class DailyReport(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -51,7 +47,7 @@ class DailyReport(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'daily_reports'  # テーブル名を指定
+        db_table = 'daily_reports'
 
 class DailyReportAnswer(models.Model):
     daily_report = models.ForeignKey(DailyReport, on_delete=models.CASCADE)
@@ -59,7 +55,10 @@ class DailyReportAnswer(models.Model):
     answer = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    threshold_value = models.FloatField()  # 閾値フィールドを追加
+    threshold_value = models.FloatField()
 
     class Meta:
-        db_table = 'daily_report_answers'  # テーブル名を指定
+        db_table = 'daily_report_answers'
+
+    def __str__(self):
+        return f'{self.questionnaire.title} - Answer: {self.answer}'

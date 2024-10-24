@@ -46,7 +46,9 @@
           <td>{{ report.updated_at }}</td>
 
           {% for answer in report.answers %}
-          <td>{{ answer.answer }}</td>
+          <td class="{% if answer.threshold_exceeded %}threshold-exceeded{% endif %}">
+            {{ answer.answer }}
+          </td>
           <td>{{ answer.threshold_exceeded }}</td>  <!-- 閾値を表示 -->
           {% endfor %}
         </tr>
