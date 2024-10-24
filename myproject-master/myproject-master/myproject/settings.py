@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     "myapp",
+    'django_extensions',
+    'django_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -86,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
-        'PASSWORD': 'Root',  # パスワード
+        'PASSWORD': 'Sho1101tibi',  # パスワード
         'HOST': 'localhost',  # ホスト (通常は'localhost')
         'PORT': '3306',  # ポート (通常は3306)
     }
@@ -127,6 +129,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
+# 静的ファイルを格納するディレクトリ
+STATICFILES_DIRS = [
+    BASE_DIR / "myapp/static",
+]
+
+# collectstaticコマンドで集めるディレクトリ
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
