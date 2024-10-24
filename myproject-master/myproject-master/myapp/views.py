@@ -1,16 +1,13 @@
 # myapp/views.py
 from rest_framework import generics
-<<<<<<< HEAD
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Threshold, Notification, send_notification
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer, ThresholdsSerializer, NotificationSerializer
 from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from .forms import ThresholdForm
-=======
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold,QuestionnaireOption
 from .serializers import EmployeesSerializer,QuestionnairesSerializer,DailyReportsSerializer,DailyReportAnswersSerializer
 from django.shortcuts import render
->>>>>>> 6f0a73023756c9bb69e15ac8d6a6f653a6055bdf
 import requests
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -126,7 +123,6 @@ def show_daily_reports(request):
         'questionnaires': questionnaires, 
     })
 
-<<<<<<< HEAD
 
 class ThresholdsList(generics.ListAPIView):
     queryset = Threshold.objects.all()
@@ -289,5 +285,3 @@ def admin_dashboard(request):
 @login_required
 def employee_dashboard(request):
     return render(request, 'employee_dashboard.html')
-=======
->>>>>>> 6f0a73023756c9bb69e15ac8d6a6f653a6055bdf
