@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     "myapp",
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,10 @@ ROOT_URLCONF = "myproject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "myapp/templates"],  # ここでテンプレートディレクトリを指定
+        "DIRS": [os.path.join(BASE_DIR, 'templates'),  # プロジェクト全体のテンプレートフォルダ
+            os.path.join(BASE_DIR, 'accounts', 'templates'),  # アカウントアプリのテンプレートフォルダ
+            os.path.join(BASE_DIR, 'myapp', 'templates'),  # 他のアプリのテンプレートフォルダ
+        ],# ここでテンプレートディレクトリを指定
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -87,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
-        'PASSWORD': 'Root',  # パスワード
+        'PASSWORD': 'root',  # パスワード
         'HOST': 'localhost',  # ホスト (通常は'localhost')
         'PORT': '3306',  # ポート (通常は3306)
     }
@@ -138,3 +142,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # セッションの有効期間を設定（例: 30分）
 SESSION_COOKIE_AGE = 30 * 60  # 秒数で指定
 SESSION_SAVE_EVERY_REQUEST = True  # 各リクエストでセッションの期限を更新
+
+AUTH_USER_MODEL = "accounts.User"
+LOGOUT_REDIRECT_URL = "/accounts/login"
