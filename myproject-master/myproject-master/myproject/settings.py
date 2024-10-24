@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     "myapp",
     'accounts.apps.AccountsConfig',
+    'django_extensions',
+    'django_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -132,6 +134,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
+# 静的ファイルを格納するディレクトリ
+STATICFILES_DIRS = [
+    BASE_DIR / "myapp/static",
+]
+
+# collectstaticコマンドで集めるディレクトリ
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

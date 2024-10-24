@@ -9,3 +9,7 @@ th, td {
     padding: 8px;
     text-align: left;
 }
+.threshold-exceeded {
+    background-color: #ffcccc; /* 閾値超過時にセルを赤っぽくする */
+  }
+  
