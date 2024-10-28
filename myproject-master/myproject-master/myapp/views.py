@@ -2,9 +2,10 @@
 from rest_framework import generics
 # from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Threshold, Notification, send_notification
 # from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer, ThresholdsSerializer, NotificationSerializer
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-# from .forms import ThresholdForm
+from .forms import DailyReportAnswerForm
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold,QuestionnaireOption
 from .serializers import EmployeesSerializer,QuestionnairesSerializer,DailyReportsSerializer,DailyReportAnswersSerializer
 from django.shortcuts import render
@@ -125,6 +126,30 @@ def show_daily_reports(request):
     return render(request, 'myapp/show_daily_reports.html', {
         'reports': report_data,
         'questionnaires': questionnaires, 
+    })
+
+
+
+def submit_answer(request, questionnaire_id):
+    questionnaire = get_object_or_404(Questionnaire, id=questionnaire_id)
+    employee = request.user.employee  # ログインしている従業員の情報を取得
+    daily_report, created = DailyReport.objects.get_or_create(
+        employee=employee, report_datetime=timezone.now(), report_type='morning'
+    )
+
+    if request.method == 'POST':
+        form = DailyReportAnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.daily_report = daily_report
+            answer.save()
+            return redirect('thank_you')  # 回答後のリダイレクト先を設定
+    else:
+        form = DailyReportAnswerForm(initial={'questionnaire': questionnaire})
+
+    return render(request, 'myapp/daily_report_anser_form.html', {
+        'form': form,
+        'questionnaire': questionnaire,
     })
 
 
