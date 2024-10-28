@@ -41,30 +41,42 @@ class DailyReportMorning(models.Model):
     emotional_stability_after_self = models.IntegerField()
 
 
-
     class Meta:
         db_table = 'employees'
+
+class QuestionnaireCategory(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'questionnaire_categories'
+
+    def __str__(self):
+        return self.name
 
 
 class Questionnaire(models.Model):
     title = models.CharField(max_length=255)
+    category = models.ForeignKey(QuestionnaireCategory, on_delete=models.SET_NULL, null=True, blank=True)  # カテゴリーを関連付け
 
-    type = models.CharField(max_length=10, choices=[(
-        'morning', 'Morning'), ('evening', 'Evening')])
-    type = models.CharField(max_length=10, choices=[(
-        'morning', 'Morning'), ('evening', 'Evening')])
-    type = models.CharField(max_length=50)
+    type = models.CharField(max_length=10, choices=[
+        ('morning', 'Morning'), ('evening', 'Evening')
+    ])
     answer_type = models.CharField(max_length=50, default="未指定")  # デフォルト値を指定
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'questionnaires'
+
 
 class QuestionnaireOption(models.Model):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
     option_text = models.CharField(max_length=100)  # 選択肢のテキスト（例：'良い'、'悪い'など）
     option_value = models.IntegerField()  # 選択肢に対応する数値（例：1, 2, 3）
 
-    # class Meta:
-    #     db_table = 'questionnaire_options'
+    class Meta:
+        db_table = 'questionnaire_options'
 
     def __str__(self):
         return f'{self.questionnaire.title}: {self.option_text} ({self.option_value})'
@@ -183,3 +195,5 @@ class DailyReportAnswer(models.Model):
 
 #     def __str__(self):
 #         return f'{self.questionnaire.title} - Answer: {self.answer}'
+
+

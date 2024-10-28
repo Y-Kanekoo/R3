@@ -1,26 +1,15 @@
 from django import forms
-from .models import Threshold
+from .models import DailyReportAnswer
 
-
-class ThresholdForm(forms.ModelForm):
+class DailyReportAnswerForm(forms.ModelForm):
     class Meta:
-        model = Threshold
-        fields = ['employee', 'questionnaire', 'min_value',
-                  'max_value', 'exact_value', 'threshold_type']
+        model = DailyReportAnswer
+        fields = ['questionnaire', 'answer']
         widgets = {
-            'threshold_type': forms.Select(choices=Threshold.THRESHOLD_TYPE_CHOICES),
+            'questionnaire': forms.HiddenInput(),  # 質問を隠しフィールドにする場合
+            'answer': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '回答を入力してください'}),
+        }
+        labels = {
+            'answer': '回答',
         }
 
-
-# ログインフォーム
-class LoginForm(forms.Form):
-    username = forms.CharField(
-        label="名前",
-        max_length=255,
-        widget=forms.TextInput(attrs={'autocomplete': 'on'})  # オートコンプリートを有効にする
-    )
-    password = forms.CharField(
-        label="パスワード",
-        widget=forms.PasswordInput(
-            attrs={'autocomplete': 'on'})  # パスワード入力用フィールド
-    )
