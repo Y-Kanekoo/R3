@@ -31,7 +31,6 @@
           <th>更新日時</th>
           {% for question in questionnaires %}
           <th>{{ question.title }}</th>
-          <th>閾値</th>  <!-- 閾値の列を追加 -->
           {% endfor %}
         </tr>
       </thead>
@@ -49,7 +48,6 @@
           <td class="{% if answer.threshold_exceeded %}threshold-exceeded{% endif %}">
             {{ answer.answer }}
           </td>
-          <td>{{ answer.threshold_exceeded }}</td>  <!-- 閾値を表示 -->
           {% endfor %}
         </tr>
         {% endfor %}
