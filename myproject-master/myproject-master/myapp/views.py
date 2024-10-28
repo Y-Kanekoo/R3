@@ -4,6 +4,7 @@ from rest_framework import generics
 # from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer, ThresholdsSerializer, NotificationSerializer
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.http import HttpResponseForbidden
 from .forms import DailyReportAnswerForm
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold,QuestionnaireOption
@@ -132,9 +133,8 @@ def show_daily_reports(request):
 
 def submit_answer(request, questionnaire_id):
     questionnaire = get_object_or_404(Questionnaire, id=questionnaire_id)
-    employee = request.user.employee  # ログインしている従業員の情報を取得
     daily_report, created = DailyReport.objects.get_or_create(
-        employee=employee, report_datetime=timezone.now(), report_type='morning'
+        report_datetime=timezone.now(), report_type='morning'
     )
 
     if request.method == 'POST':
@@ -147,11 +147,10 @@ def submit_answer(request, questionnaire_id):
     else:
         form = DailyReportAnswerForm(initial={'questionnaire': questionnaire})
 
-    return render(request, 'myapp/daily_report_anser_form.html', {
+    return render(request, 'myapp/submit_answer.html', {
         'form': form,
         'questionnaire': questionnaire,
     })
-
 
 # class ThresholdsList(generics.ListAPIView):
 #     queryset = Threshold.objects.all()
