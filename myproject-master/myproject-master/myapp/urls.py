@@ -1,6 +1,7 @@
 # myapp/urls.py
 from django.urls import path
-from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers, ThresholdsList, show_thresholds, show_notifications, mark_as_read, login_view, check_session_timeout, admin_dashboard, employee_dashboard
+from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers
+# , ThresholdsList, show_thresholds, show_notifications, mark_as_read, login_view, check_session_timeout, admin_dashboard, employee_dashboard
 
 
 urlpatterns = [
@@ -23,27 +24,27 @@ urlpatterns = [
     path('show_report_answers/', show_report_answers, name='show_report_answers'),
 
 
-    path('api/ThresholdsList/', ThresholdsList.as_view(),
-         name='Thresholds_List'),  # 閾値を設定
-    path('show_thresholds/', show_thresholds, name='show_threshold'),
+#     path('api/ThresholdsList/', ThresholdsList.as_view(),
+#          name='Thresholds_List'),  # 閾値を設定
+#     path('show_thresholds/', show_thresholds, name='show_threshold'),
 
-    # 通知の表示
-    path('notifications/', show_notifications, name='show_notifications'),
+#     # 通知の表示
+#     path('notifications/', show_notifications, name='show_notifications'),
 
-    # 通知の既読処理
-    path('notifications/mark_as_read/<int:notification_id>/',
-         mark_as_read, name='mark_as_read'),
+#     # 通知の既読処理
+#     path('notifications/mark_as_read/<int:notification_id>/',
+#          mark_as_read, name='mark_as_read'),
 
-    # ログイン
-    path('login/', login_view, name='login_view'),  # ログインページ
-    path('check_session/', check_session_timeout,
-         name='check_session_timeout'),  # セッションチェック用
+#     # ログイン
+#     path('login/', login_view, name='login_view'),  # ログインページ
+#     path('check_session/', check_session_timeout,
+#          name='check_session_timeout'),  # セッションチェック用
 
 ]
 
-urlpatterns += [
-    path('admin_dashboard/', admin_dashboard,
-         name='admin_dashboard'),  # 管理者用ダッシュボード
-    path('employee_dashboard/', employee_dashboard,
-         name='employee_dashboard'),  # アンケート回答者用ページ
-]
+# urlpatterns += [
+#     path('admin_dashboard/', admin_dashboard,
+#          name='admin_dashboard'),  # 管理者用ダッシュボード
+#     path('employee_dashboard/', employee_dashboard,
+#          name='employee_dashboard'),  # アンケート回答者用ページ
+# ]

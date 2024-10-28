@@ -95,7 +95,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
+<<<<<<< HEAD
         'PASSWORD': 'Root',  # パスワード
+=======
+        'PASSWORD': 'Sho1101tibi',  # パスワード
+>>>>>>> a1199f3e19ee593d610bd33f316777f8ea3dfa9a
         'HOST': 'localhost',  # ホスト (通常は'localhost')
         'PORT': '3306',  # ポート (通常は3306)
     }
