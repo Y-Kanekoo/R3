@@ -1,3 +1,70 @@
+@charset "UTF-8";
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}/**/
+
+body{
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    height: 100vh;
+    overflow: hidden;
+}/**/
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    padding: 15px;
+    background-color: #cccc;
+    border-radius: 5px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+#search {
+    padding: 10px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px 0 0 5px;
+}
+
+#search-button {
+    padding: 10px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+#search-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+.table-container{
+    font-size: 16px;
+    overflow-y: auto; /* 垂直スクロールを許可 */
+    max-height: 400px; /* スクロール可能な最大高さを設定 */
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.table-container th{
+    background-color: #ccc;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
