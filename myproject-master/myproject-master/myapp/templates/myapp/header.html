@@ -1,0 +1,40 @@
+<!-- templates/navbar.html -->
+<div class="navbar">
+  <a href="{% url 'myapp:home' %}">ホーム</a>
+  <a href="{% url 'myapp:profile' %}">プロフィール</a>
+  {% if request.user.is_staff %}
+      <!-- Buttons visible only to staff/admin users -->
+      <a href="{% url 'myapp:user_list' %}">ユーザー一覧</a>
+      <a href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
+  {% endif %}
+
+  <form method="post" action="{% url 'myapp:login' %}">
+      {% csrf_token %}
+      <button type="submit">ログアウト</button>
+  </form>
+</div>
+
+<style>
+  /* Basic styling for the navbar */
+  .navbar {
+      display: flex;
+      background-color: #333;
+      padding: 10px;
+  }
+  .navbar a, .navbar form button {
+      color: white;
+      background-color: #333;
+      border: none;
+      padding: 10px 20px;
+      text-decoration: none;
+      cursor: pointer;
+      margin-right: 10px;
+      text-align: center;
+  }
+  .navbar a:hover, .navbar form button:hover {
+      background-color: #555;
+  }
+  .navbar form {
+      margin-left: auto;
+  }
+</style>
