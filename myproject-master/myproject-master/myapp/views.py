@@ -1,14 +1,18 @@
 # myapp/views.py
+from .models import Employee
 from rest_framework import generics
 # from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Threshold, Notification, send_notification
 # from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer, ThresholdsSerializer, NotificationSerializer
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect
 from django.http import HttpResponseForbidden
 # from .forms import ThresholdForm
-from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold,QuestionnaireOption
-from .serializers import EmployeesSerializer,QuestionnairesSerializer,DailyReportsSerializer,DailyReportAnswersSerializer
-from django.shortcuts import render
+from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, QuestionnaireThreshold, QuestionnaireOption
+from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 import requests
+from django.contrib import messages
+from .forms import EmployeeForm
+from django.db.models import Q
 # from django.contrib.auth import authenticate, login
 # from django.contrib.auth.decorators import login_required
 # from django.contrib.auth import logout
@@ -28,6 +32,70 @@ def show_employees(request):
     response = requests.get('http://127.0.0.1:8000/api/EmployeesList/')
     employees = response.json()  # APIから取得したデータをJSON形式で読み込む
     return render(request, 'myapp/show_employees.html', {'employees': employees})
+
+
+def employee_management(request, employee_id=None):
+    # ソート用のパラメータを取得
+    sort_by = request.GET.get('sort', 'name')  # デフォルトは名前でソート
+    direction = request.GET.get('direction', 'asc')  # デフォルトは昇順
+
+    # ソート条件の設定
+    if direction == 'desc':
+        sort_by = f'-{sort_by}'
+
+    # 従業員一覧の取得（ソート適用）
+    employees = Employee.objects.all().order_by(sort_by)
+
+    # 編集対象の従業員取得
+    employee = get_object_or_404(
+        Employee, id=employee_id) if employee_id else None
+
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            if employee:
+                employee.delete()
+                messages.success(request, f'{employee.name}さんを削除しました。')
+                return redirect('employee_management')
+        else:
+            # 追加・編集の処理
+            name = request.POST.get('name')
+            employee_type = request.POST.get('employee_type')
+
+            if not name:
+                messages.error(request, '名前を入力してください。')
+            else:
+                # 重複チェック
+                duplicate = Employee.objects.filter(
+                    Q(name=name) &
+                    Q(employee_type=employee_type)
+                ).exclude(id=employee_id).exists()
+
+                if duplicate:
+                    messages.error(request, 'この名前とタイプの組み合わせは既に存在します。')
+                else:
+                    if employee:
+                        # 更新
+                        employee.name = name
+                        employee.employee_type = employee_type
+                        employee.save()
+                        messages.success(request, f'{name}さんの情報を更新しました。')
+                    else:
+                        # 新規作成
+                        Employee.objects.create(
+                            name=name, employee_type=employee_type)
+                        messages.success(request, f'{name}さんを追加しました。')
+                    return redirect('employee_management')
+
+    # テンプレートに渡すコンテキスト
+    context = {
+        'employees': employees,
+        'editing_employee': employee,
+        'employee_types': Employee.EMPLOYEE_TYPE_CHOICES,
+        'current_sort': sort_by.replace('-', ''),
+        'current_direction': direction,
+    }
+
+    return render(request, 'myapp/employee_management.html', context)
 
 
 class QuestionnairesList(generics.ListAPIView):
@@ -76,7 +144,8 @@ def show_daily_reports(request):
 
     # 閾値データを取得して辞書に整理
     thresholds = QuestionnaireThreshold.objects.all()
-    threshold_dict = {threshold.questionnaire_id: (threshold.threshold_min, threshold.threshold_max) for threshold in thresholds}
+    threshold_dict = {threshold.questionnaire_id: (
+        threshold.threshold_min, threshold.threshold_max) for threshold in thresholds}
 
     # レポートごとに回答を整理
     report_data = []
@@ -85,7 +154,8 @@ def show_daily_reports(request):
         for answer in answers:
             if answer.daily_report_id == report.id:
                 # 閾値を取得
-                min_threshold, max_threshold = threshold_dict.get(answer.questionnaire.id, (None, None))
+                min_threshold, max_threshold = threshold_dict.get(
+                    answer.questionnaire.id, (None, None))
 
                 # 閾値を超えているかを判定
                 threshold_exceeded = False
@@ -102,7 +172,8 @@ def show_daily_reports(request):
                 # # 回答を選択肢のテキストに変換
                 try:
                     ansewer_value = int(answer.answer)
-                    answer_text = option_dict.get((answer.questionnaire.id, ansewer_value), answer.answer)
+                    answer_text = option_dict.get(
+                        (answer.questionnaire.id, ansewer_value), answer.answer)
                 except ValueError:
                     answer_text = answer.answer
 
@@ -111,7 +182,7 @@ def show_daily_reports(request):
                     'answer': answer_text,
                     'threshold_exceeded': threshold_exceeded  # 閾値超過のフラグを追加
                 })
-        
+
         report_data.append({
             'id': report.id,
             'employee': report.employee.name,
@@ -124,7 +195,7 @@ def show_daily_reports(request):
 
     return render(request, 'myapp/show_daily_reports.html', {
         'reports': report_data,
-        'questionnaires': questionnaires, 
+        'questionnaires': questionnaires,
     })
 
 

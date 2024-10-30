@@ -2,45 +2,56 @@
 # myapp/models.py
 
 from django.db import models
-from django.core.exceptions import ValidationError
+
 
 class Employee(models.Model):
-    name = models.CharField(max_length=255)
+    EMPLOYEE_TYPE_CHOICES = [
+        ('admin', '管理者'),
+        ('general', '一般'),
+    ]
+    name = models.CharField(max_length=255, verbose_name='名前')
     employee_type = models.CharField(
-        max_length=10, choices=[('admin', 'Admin'), ('general', 'General')])
-    employee_type = models.CharField(
-        max_length=10, choices=[('admin', 'Admin'), ('general', 'General')])
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+        max_length=10,
+        choices=EMPLOYEE_TYPE_CHOICES,
+        verbose_name='従業員タイプ'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = '従業員'
+        verbose_name_plural = '従業員一覧'
+
+    def __str__(self):
+        return f"{self.name} - {self.get_employee_type_display()}"
 
 
 class DailyReportMorning(models.Model):
     name = models.CharField(max_length=255)
     sleep_time = models.TimeField()
     wake_time = models.TimeField()
-    sleep_quality = models.CharField(max_length = 150)
-    had_dinner_yesterday = models.CharField(max_length = 10)
-    had_breakfast_today = models.CharField(max_length = 10)
-    medicine_time = models.CharField(max_length = 10)
-    current_condition = models.CharField(max_length = 10)
+    sleep_quality = models.CharField(max_length=150)
+    had_dinner_yesterday = models.CharField(max_length=10)
+    had_breakfast_today = models.CharField(max_length=10)
+    medicine_time = models.CharField(max_length=10)
+    current_condition = models.CharField(max_length=10)
     current_condition_other = models.TextField(blank=True, null=True)
-    anxiety_level = models.CharField(max_length = 10)
-    current_emotion = models.CharField(max_length = 10)
-    communication_willingness = models.CharField(max_length = 10)
-    physical_condition = models.CharField(max_length = 10)
-    concentration_level = models.CharField(max_length = 10)
-    physical_discomfort = models.CharField(max_length = 10)
-    self_esteem = models.CharField(max_length = 10)
-    willingness_to_depend = models.CharField(max_length = 10)
-    feeling_needed = models.CharField(max_length = 10)
+    anxiety_level = models.CharField(max_length=10)
+    current_emotion = models.CharField(max_length=10)
+    communication_willingness = models.CharField(max_length=10)
+    physical_condition = models.CharField(max_length=10)
+    concentration_level = models.CharField(max_length=10)
+    physical_discomfort = models.CharField(max_length=10)
+    self_esteem = models.CharField(max_length=10)
+    willingness_to_depend = models.CharField(max_length=10)
+    feeling_needed = models.CharField(max_length=10)
     other_symptoms = models.TextField(blank=True, null=True)
-    need_work_accommodation = models.CharField(max_length = 20)
+    need_work_accommodation = models.CharField(max_length=20)
     need_work_accommodation_other = models.TextField(blank=True, null=True)
     message = models.TextField(blank=True, null=True)
     recovery_routine = models.TextField(blank=True, null=True)
     emotional_stability_after_self = models.IntegerField()
-
-
 
     class Meta:
         db_table = 'employees'
@@ -51,12 +62,11 @@ class Questionnaire(models.Model):
 
     type = models.CharField(max_length=10, choices=[(
         'morning', 'Morning'), ('evening', 'Evening')])
-    type = models.CharField(max_length=10, choices=[(
-        'morning', 'Morning'), ('evening', 'Evening')])
     type = models.CharField(max_length=50)
     answer_type = models.CharField(max_length=50, default="未指定")  # デフォルト値を指定
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
 class QuestionnaireOption(models.Model):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
@@ -69,9 +79,11 @@ class QuestionnaireOption(models.Model):
     def __str__(self):
         return f'{self.questionnaire.title}: {self.option_text} ({self.option_value})'
 
+
 class QuestionnaireThreshold(models.Model):
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
-    questionnaire = models.ForeignKey('Questionnaire', on_delete=models.CASCADE)
+    questionnaire = models.ForeignKey(
+        'Questionnaire', on_delete=models.CASCADE)
     threshold_min = models.IntegerField(null=True, blank=True)
     threshold_max = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -85,8 +97,6 @@ class QuestionnaireThreshold(models.Model):
 class DailyReport(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     report_datetime = models.DateTimeField()
-    report_type = models.CharField(max_length=10, choices=[
-                                   ('morning', 'Morning'), ('evening', 'Evening')])
     report_type = models.CharField(max_length=10, choices=[
                                    ('morning', 'Morning'), ('evening', 'Evening')])
     created_at = models.DateTimeField(auto_now_add=True)

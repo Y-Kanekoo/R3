@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">従業員管理</h1>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- 従業員追加・編集フォーム -->
+    <div class="card mb-4">
+        <div class="card-header">
+            {% if editing_employee %}
+            <h2 class="card-title">従業員を編集</h2>
+            {% else %}
+            <h2 class="card-title">新しい従業員を追加</h2>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="name" class="form-label">名前</label>
+                    <input type="text" class="form-control" id="name" name="name" 
+                           value="{{ editing_employee.name|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="employee_type" class="form-label">従業員タイプ</label>
+                    <select class="form-select" id="employee_type" name="employee_type" required>
+                        {% for value, label in employee_types %}
+                        <option value="{{ value }}" 
+                            {% if editing_employee and editing_employee.employee_type == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="text-end">
+                    {% if editing_employee %}
+                    <a href="{% url 'employee_management' %}" class="btn btn-secondary">キャンセル</a>
+                    <button type="submit" class="btn btn-primary">更新</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary">追加</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 従業員一覧テーブル -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">従業員一覧</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a href="?sort=name&direction={% if current_sort == 'name' and current_direction == 'asc' %}desc{% else %}asc{% endif %}" 
+                                   class="text-decoration-none text-dark">
+                                    名前
+                                    {% if current_sort == 'name' %}
+                                        {% if current_direction == 'asc' %}↑{% else %}↓{% endif %}
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="?sort=employee_type&direction={% if current_sort == 'employee_type' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                                   class="text-decoration-none text-dark">
+                                    タイプ
+                                    {% if current_sort == 'employee_type' %}
+                                        {% if current_direction == 'asc' %}↑{% else %}↓{% endif %}
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>
+                                <a href="?sort=created_at&direction={% if current_sort == 'created_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                                   class="text-decoration-none text-dark">
+                                    作成日時
+                                    {% if current_sort == 'created_at' %}
+                                        {% if current_direction == 'asc' %}↑{% else %}↓{% endif %}
+                                    {% endif %}
+                                </a>
+                            </th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in employees %}
+                        <tr>
+                            <td>{{ employee.name }}</td>
+                            <td>{{ employee.get_employee_type_display }}</td>
+                            <td>{{ employee.created_at|date:"Y/m/d H:i" }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'employee_management_with_id' employee.id %}" 
+                                       class="btn btn-sm btn-outline-primary">編集</a>
+                                    <form method="post" action="{% url 'employee_management_with_id' employee.id %}" 
+                                          style="display: inline;" 
+                                          onsubmit="return confirm('{{ employee.name }}さんを削除してもよろしいですか？');">
+                                        {% csrf_token %}
+                                        <button type="submit" name="delete" 
+                                                class="btn btn-sm btn-outline-danger">削除</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">従業員が登録されていません。</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

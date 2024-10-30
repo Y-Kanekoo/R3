@@ -1,6 +1,6 @@
 # myapp/urls.py
 from django.urls import path
-from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers
+from .views import EmployeesList, show_employees, employee_management, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers
 # , ThresholdsList, show_thresholds, show_notifications, mark_as_read, login_view, check_session_timeout, admin_dashboard, employee_dashboard
 
 
@@ -8,7 +8,10 @@ urlpatterns = [
 
     path('api/EmployeesList/', EmployeesList.as_view(), name='Employees_List'),
     path('show_employees/', show_employees, name='show_employees'),
-
+    path('employees/', employee_management,
+         name='employee_management'),  # 一覧・追加・編集・削除を同じページで行う
+    path('employees/<int:employee_id>/', employee_management,
+         name='employee_management_with_id'),
 
     path('api/QuestionnairesList/', QuestionnairesList.as_view(),
          name='Questionnaires_List'),  # 日報のアンケートリスト
@@ -24,21 +27,21 @@ urlpatterns = [
     path('show_report_answers/', show_report_answers, name='show_report_answers'),
 
 
-#     path('api/ThresholdsList/', ThresholdsList.as_view(),
-#          name='Thresholds_List'),  # 閾値を設定
-#     path('show_thresholds/', show_thresholds, name='show_threshold'),
+    #     path('api/ThresholdsList/', ThresholdsList.as_view(),
+    #          name='Thresholds_List'),  # 閾値を設定
+    #     path('show_thresholds/', show_thresholds, name='show_threshold'),
 
-#     # 通知の表示
-#     path('notifications/', show_notifications, name='show_notifications'),
+    #     # 通知の表示
+    #     path('notifications/', show_notifications, name='show_notifications'),
 
-#     # 通知の既読処理
-#     path('notifications/mark_as_read/<int:notification_id>/',
-#          mark_as_read, name='mark_as_read'),
+    #     # 通知の既読処理
+    #     path('notifications/mark_as_read/<int:notification_id>/',
+    #          mark_as_read, name='mark_as_read'),
 
-#     # ログイン
-#     path('login/', login_view, name='login_view'),  # ログインページ
-#     path('check_session/', check_session_timeout,
-#          name='check_session_timeout'),  # セッションチェック用
+    #     # ログイン
+    #     path('login/', login_view, name='login_view'),  # ログインページ
+    #     path('check_session/', check_session_timeout,
+    #          name='check_session_timeout'),  # セッションチェック用
 
 ]
 
