@@ -60,6 +60,10 @@ class Daily_reportsList(generics.ListAPIView):
     serializer_class = DailyReportsSerializer
 
 
+def navbar_view(request):
+    return render(request, 'navbar.html')
+
+
 def show_daily_reports(request):
     # レポートを取得
     reports = DailyReport.objects.select_related('employee').all()

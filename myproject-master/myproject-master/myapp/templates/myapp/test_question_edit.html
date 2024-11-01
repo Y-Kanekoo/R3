@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>question edit</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/test_question_edit.css' %}" />
+
+  </head>
+  <body>
+
+    <div class="search-container">
+        <input type="text" id="search" placeholder="検索">
+        <button id="search-button">検索</button>
+    </div>
+
+    <div class="table-container">
+      <table border="1">
+        <thead>
+          <tr>
+            <th>レポートID</th>
+            <th>従業員ID</th>
+            <th>レポート日時</th>
+            <th>レポートタイプ</th>
+            <th>作成日時</th>
+            <th>更新日時</th>
+            {% for question in questionnaires %}
+            <th>{{ question.title }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for report in reports %}
+          <tr>
+            <td>{{ report.id }}</td>
+            <td>{{ report.employee }}</td>
+            <td>{{ report.report_datetime }}</td>
+            <td>{{ report.report_type }}</td>
+            <td>{{ report.created_at }}</td>
+            <td>{{ report.updated_at }}</td>
+  
+            {% for answer in report.answers %}
+            <td class="{% if answer.threshold_exceeded %}threshold-exceeded{% endif %}">
+              {{ answer.answer }}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+
+    <script src="{% static 'myapp/javascript/script.js' %}"></script>
+
+  </body>
+</html>

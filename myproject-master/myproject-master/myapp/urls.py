@@ -24,6 +24,9 @@ urlpatterns = [
      path('show_report_answers/', show_report_answers, name='show_report_answers'),
 
      path('questionnaire/<int:questionnaire_id>/submit/', views.submit_answer, name='submit_answer'),
+     
+     path('navbar/', views.navbar_view, name='navbar'),
+     
 ]
 
 #     path('api/ThresholdsList/', ThresholdsList.as_view(),
