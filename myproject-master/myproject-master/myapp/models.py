@@ -25,9 +25,6 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.get_employee_type_display()}"
-        max_length = 10, choices = [('admin', 'Admin'), ('general', 'General')]
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
 class DailyReportMorning(models.Model):
