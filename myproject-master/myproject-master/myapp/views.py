@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer,QuestionnaireThreshold,QuestionnaireOption
 from .serializers import EmployeesSerializer,QuestionnairesSerializer,DailyReportsSerializer,DailyReportAnswersSerializer
-from django.shortcuts import render
 import requests
 from django.utils import timezone
 
