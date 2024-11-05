@@ -1,23 +1,95 @@
 # myapp/views.py
+from .models import Employee
+from rest_framework import generics
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
-from django.utils import timezone
-import requests
-from rest_framework import generics
+from django.http import HttpResponseRedirect
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, QuestionnaireThreshold, QuestionnaireOption
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
+from django.utils import timezone
+import requests
+from django.contrib import messages
+from .forms import EmployeeForm
+from django.db.models import Q
+
 
 class EmployeesList(generics.ListAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeesSerializer
 
+# # APIからデータを取得し、テンプレートに表示するためのビュー
+
+
 def show_employees(request):
+    # ローカルサーバー上のAPIエンドポイントからデータを取得
     response = requests.get('http://127.0.0.1:8000/api/EmployeesList/')
-    if response.status_code == 200:
-        employees = response.json()
-    else:
-        employees = []
+    employees = response.json()  # APIから取得したデータをJSON形式で読み込む
     return render(request, 'myapp/show_employees.html', {'employees': employees})
+
+
+def employee_management(request, employee_id=None):
+    # ソート用のパラメータを取得
+    sort_by = request.GET.get('sort', 'name')  # デフォルトは名前でソート
+    direction = request.GET.get('direction', 'asc')  # デフォルトは昇順
+
+    # ソート条件の設定
+    if direction == 'desc':
+        sort_by = f'-{sort_by}'
+
+    # 従業員一覧の取得（ソート適用）
+    employees = Employee.objects.all().order_by(sort_by)
+
+    # 編集対象の従業員取得
+    employee = get_object_or_404(
+        Employee, id=employee_id) if employee_id else None
+
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            if employee:
+                employee.delete()
+                messages.success(request, f'{employee.name}さんを削除しました。')
+                return redirect('employee_management')
+        else:
+            # 追加・編集の処理
+            name = request.POST.get('name')
+            employee_type = request.POST.get('employee_type')
+
+            if not name:
+                messages.error(request, '名前を入力してください。')
+            else:
+                # 重複チェック
+                duplicate = Employee.objects.filter(
+                    Q(name=name) &
+                    Q(employee_type=employee_type)
+                ).exclude(id=employee_id).exists()
+
+                if duplicate:
+                    messages.error(request, 'この名前とタイプの組み合わせは既に存在します。')
+                else:
+                    if employee:
+                        # 更新
+                        employee.name = name
+                        employee.employee_type = employee_type
+                        employee.save()
+                        messages.success(request, f'{name}さんの情報を更新しました。')
+                    else:
+                        # 新規作成
+                        Employee.objects.create(
+                            name=name, employee_type=employee_type)
+                        messages.success(request, f'{name}さんを追加しました。')
+                    return redirect('employee_management')
+
+    # テンプレートに渡すコンテキスト
+    context = {
+        'employees': employees,
+        'editing_employee': employee,
+        'employee_types': Employee.EMPLOYEE_TYPE_CHOICES,
+        'current_sort': sort_by.replace('-', ''),
+        'current_direction': direction,
+    }
+
+    return render(request, 'myapp/employee_management.html', context)
+
 
 class QuestionnairesList(generics.ListAPIView):
     queryset = Questionnaire.objects.all()
@@ -95,6 +167,7 @@ def show_daily_reports(request):
                     'threshold_exceeded': threshold_exceeded  # 閾値超過のフラグを追加
                 })
         
+
         report_data.append({
             'id': report.id,
             'employee': report.employee.name,

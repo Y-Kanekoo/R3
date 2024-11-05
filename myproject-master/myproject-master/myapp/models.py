@@ -89,6 +89,10 @@ class DailyReport(models.Model):
 
     class Meta:
         db_table = 'daily_reports'
+        ordering = ['report_datetime']
+
+    def __str__(self):
+        return f"{self.employee.name} - {self.report_type} - {self.report_datetime}"
 
 
 class DailyReportAnswer(models.Model):
@@ -96,6 +100,8 @@ class DailyReportAnswer(models.Model):
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
     answer = models.TextField()
     threshold_value = models.IntegerField(null=True, blank=True)  # threshold_value フィールドを追加
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         db_table = 'daily_report_answers'
 

@@ -1,6 +1,6 @@
 # myapp/urls.py
 from django.urls import path
-from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers,submit_answers, submit_answers
+from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers,submit_answers
 from . import views
 
 urlpatterns = [
@@ -15,4 +15,3 @@ urlpatterns = [
     path('submit_answers/', submit_answers, name='submit_answers'),
 
 ]
-
