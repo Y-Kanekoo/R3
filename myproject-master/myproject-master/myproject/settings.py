@@ -63,7 +63,7 @@ TEMPLATES = [
                  # アカウントアプリのテンプレートフォルダ
                  os.path.join(BASE_DIR, 'accounts', 'templates'),
                  # 他のアプリのテンプレートフォルダ
-                 os.path.join(BASE_DIR, 'myapp', 'templates', 'myapp'),
+                 os.path.join(BASE_DIR, 'myapp', 'templates'),
                  ],  # ここでテンプレートディレクトリを指定
         "APP_DIRS": True,
         "OPTIONS": {

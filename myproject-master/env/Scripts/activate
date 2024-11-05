@@ -38,11 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-<<<<<<< HEAD
-VIRTUAL_ENV="C:\Users\Yuuki\R3\myproject-master\env"
-=======
 VIRTUAL_ENV="C:\Users\sho11\R3\myproject-master\env"
->>>>>>> a1199f3e19ee593d610bd33f316777f8ea3dfa9a
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

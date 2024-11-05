@@ -2,29 +2,16 @@
 # myapp/models.py
 
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class Employee(models.Model):
-    EMPLOYEE_TYPE_CHOICES = [
-        ('admin', '管理者'),
-        ('general', '一般'),
-    ]
-    name = models.CharField(max_length=255, verbose_name='名前')
+    name = models.CharField(max_length=255)
     employee_type = models.CharField(
-        max_length=10,
-        choices=EMPLOYEE_TYPE_CHOICES,
-        verbose_name='従業員タイプ'
+        max_length=10, choices=[('admin', 'Admin'), ('general', 'General')]
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = '従業員'
-        verbose_name_plural = '従業員一覧'
-
-    def __str__(self):
-        return f"{self.name} - {self.get_employee_type_display()}"
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class DailyReportMorning(models.Model):
@@ -104,13 +91,18 @@ class DailyReport(models.Model):
 
     class Meta:
         db_table = 'daily_reports'
+        ordering = ['report_datetime']
+
+    def __str__(self):
+        return f"{self.employee.name} - {self.report_type} - {self.report_datetime}"
 
 
 class DailyReportAnswer(models.Model):
     daily_report = models.ForeignKey(DailyReport, on_delete=models.CASCADE)
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
     answer = models.TextField()
-    threshold_value = models.FloatField()
+    threshold_value = models.IntegerField(
+        null=True, blank=True)  # threshold_value フィールドを追加
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
