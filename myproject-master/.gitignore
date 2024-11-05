@@ -1,0 +1,23 @@
+# Pythonのバイトコードを無視
+__pycache__/
+*.pyc
+
+# Django migrationsのキャッシュを無視
+myapp/migrations/__pycache__/
+myapp/migrations/*.pyc
+
+# 仮想環境を無視
+env/
+venv/
+
+# エディタやOSに関する不要なファイルを無視
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ログファイルを無視
+*.log
+
+# 必要に応じて他のライブラリや設定ファイルも無視

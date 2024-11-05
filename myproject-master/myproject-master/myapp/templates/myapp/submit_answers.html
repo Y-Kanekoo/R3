@@ -1,0 +1,33 @@
+<!-- myapp/templates/myapp/submit_answers.html -->
+<form method="post">
+    {% csrf_token %}
+    <label for="employee_id">Employee ID:</label>
+    <input type="text" id="employee_id" name="employee_id" required><br>
+
+    {% for questionnaire in questionnaires %}
+        <label>{{ questionnaire.title }}</label><br>
+
+        {% with options_found=False %}
+            {% for option in options %}
+                {% if option.questionnaire.id == questionnaire.id %}
+                    <input type="radio" id="questionnaire_{{ questionnaire.id }}_{{ option.id }}" name="questionnaire_{{ questionnaire.id }}" value="{{ option.option_value }}" required>
+                    <label for="questionnaire_{{ questionnaire.id }}_{{ option.id }}">{{ option.option_text }}</label><br>
+                    {% with options_found=True %}
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+
+            {% if not options_found %}
+                {% if questionnaire.answer_type == 'time_select' %}
+                    <input type="time" name="questionnaire_{{ questionnaire.id }}" required><br>
+                {% elif questionnaire.answer_type == 'text' %}
+                    <input type="text" name="questionnaire_{{ questionnaire.id }}" required><br>
+                {% endif %}
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+
+    <button type="submit">Submit</button>
+</form>
+
+
