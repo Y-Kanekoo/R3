@@ -101,8 +101,7 @@ class DailyReportAnswer(models.Model):
     daily_report = models.ForeignKey(DailyReport, on_delete=models.CASCADE)
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
     answer = models.TextField()
-    threshold_value = models.IntegerField(
-        null=True, blank=True)  # threshold_value フィールドを追加
+    # threshold_value = models.IntegerField(null=True, blank=True)  # threshold_value フィールドを追加
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
