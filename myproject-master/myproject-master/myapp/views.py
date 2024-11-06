@@ -15,6 +15,7 @@ from django.urls import reverse_lazy,reverse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.hashers import check_password 
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
 from rest_framework import generics  # 外部ライブラリのインポート
 from myapp.signup import SignUpForm  # 最後にアプリ関連のインポートを行う
@@ -246,12 +247,14 @@ def submit_answers(request):
 #login
 class CustomLoginView(LoginView):
     template_name = 'myapp/login.html'
+    authentication_form = AuthenticationForm  # 認証フォームを指定
     redirect_authenticated_user = True  # ログイン済みユーザーはリダイレクトされる
     # `remember me`オプションを追加したい場合、セッションを拡張するためにオプション設定を追加
 def get_success_url(self):
         return reverse_lazy('myapp:home') 
 class CustomLogoutView(LogoutView):
-    next_page = 'login'
+     def get_next_page(self):
+        return reverse_lazy('myapp:login')
 
 #ホーム画面
 def home(request):

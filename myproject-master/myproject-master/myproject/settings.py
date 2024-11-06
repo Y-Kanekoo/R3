@@ -151,6 +151,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_AGE = 30 * 60  # 秒数で指定
 SESSION_SAVE_EVERY_REQUEST = True  # 各リクエストでセッションの期限を更新
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 AUTH_USER_MODEL = "myapp.User"
-LOGOUT_REDIRECT_URL = "myapp/login"
+LOGOUT_REDIRECT_URL = "myapp:login"
 LOGIN_REDIRECT_URL = 'myapp:home'

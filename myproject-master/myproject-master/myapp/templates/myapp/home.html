@@ -40,7 +40,7 @@
         <a href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
     {% endif %}
  
-    <form method="post" action="{% url 'myapp:login' %}">
+    <form method="post" action="{% url 'myapp:logout' %}">
         {% csrf_token %}
         <button type="submit">ログアウト</button>
     </form>

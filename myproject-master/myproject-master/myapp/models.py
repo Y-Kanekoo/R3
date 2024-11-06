@@ -36,8 +36,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
 
     def save(self, *args, **kwargs):
         # Userモデルのデータを保存する前にEmployeeモデルの共通データを保存
