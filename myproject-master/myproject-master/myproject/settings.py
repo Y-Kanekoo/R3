@@ -60,9 +60,11 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(BASE_DIR, 'templates'),  # プロジェクト全体のテンプレートフォルダ
-            os.path.join(BASE_DIR, 'accounts', 'templates'),  # アカウントアプリのテンプレートフォルダ
-            os.path.join(BASE_DIR, 'myapp', 'templates'),  # 他のアプリのテンプレートフォルダ
-        ],# ここでテンプレートディレクトリを指定
+                 # アカウントアプリのテンプレートフォルダ
+                 os.path.join(BASE_DIR, 'accounts', 'templates'),
+                 # 他のアプリのテンプレートフォルダ
+                 os.path.join(BASE_DIR, 'myapp', 'templates'),
+                 ],  # ここでテンプレートディレクトリを指定
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -93,7 +95,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
-        'PASSWORD': 'Sho1101tibi',  # パスワード
+        'PASSWORD': 'Root',  # パスワード
         'HOST': 'localhost',  # ホスト (通常は'localhost')
         'PORT': '3306',  # ポート (通常は3306)
     }

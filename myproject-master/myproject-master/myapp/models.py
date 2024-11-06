@@ -4,6 +4,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
+
 class Employee(models.Model):
     name = models.CharField(max_length=255)
     employee_type = models.CharField(
@@ -67,7 +68,8 @@ class QuestionnaireOption(models.Model):
 
 class QuestionnaireThreshold(models.Model):
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
-    questionnaire = models.ForeignKey('Questionnaire', on_delete=models.CASCADE)
+    questionnaire = models.ForeignKey(
+        'Questionnaire', on_delete=models.CASCADE)
     threshold_min = models.IntegerField(null=True, blank=True)
     threshold_max = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,9 +101,10 @@ class DailyReportAnswer(models.Model):
     daily_report = models.ForeignKey(DailyReport, on_delete=models.CASCADE)
     questionnaire = models.ForeignKey(Questionnaire, on_delete=models.CASCADE)
     answer = models.TextField()
-    threshold_value = models.IntegerField(null=True, blank=True)  # threshold_value フィールドを追加
+    threshold_value = models.IntegerField(
+        null=True, blank=True)  # threshold_value フィールドを追加
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = 'daily_report_answers'
-

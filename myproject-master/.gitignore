@@ -3,8 +3,8 @@ __pycache__/
 *.pyc
 
 # Django migrationsのキャッシュを無視
-myapp/migrations/__pycache__/
-myapp/migrations/*.pyc
+**myapp/migrations/__pycache__/
+**myapp/migrations/*.pyc
 
 # 仮想環境を無視
 env/
