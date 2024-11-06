@@ -1,9 +1,9 @@
 # myapp/views.py
-from .models import Employee
-from rest_framework import generics
 from django.shortcuts import render, redirect, get_object_or_404
+from .models import Employee
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
+from django.contrib.auth import login, get_user_model,authenticate
 from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, QuestionnaireThreshold, QuestionnaireOption
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
@@ -11,6 +11,13 @@ import requests
 from django.contrib import messages
 from .forms import EmployeeForm
 from django.db.models import Q
+from django.urls import reverse_lazy,reverse
+from django.views.generic.edit import CreateView
+from django.contrib.auth.views import LoginView,LogoutView
+from django.contrib.auth.hashers import check_password 
+from django.contrib.admin.views.decorators import staff_member_required
+from rest_framework import generics  # 外部ライブラリのインポート
+from myapp.signup import SignUpForm  # 最後にアプリ関連のインポートを行う
 
 
 class EmployeesList(generics.ListAPIView):
@@ -235,3 +242,40 @@ def submit_answers(request):
     }
 
     return render(request, 'myapp/submit_answers.html', context)
+
+#login
+class CustomLoginView(LoginView):
+    template_name = 'myapp/login.html'
+    redirect_authenticated_user = True  # ログイン済みユーザーはリダイレクトされる
+    # `remember me`オプションを追加したい場合、セッションを拡張するためにオプション設定を追加
+def get_success_url(self):
+        return reverse_lazy('myapp:home') 
+class CustomLogoutView(LogoutView):
+    next_page = 'login'
+
+#ホーム画面
+def home(request):
+    return render(request, 'myapp/home.html')
+ #signup
+class SignUpView(CreateView):
+    form_class = SignUpForm
+    success_url = reverse_lazy("home")
+    template_name = "myapp/signup.html"
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        self.object = user
+        return redirect(self.get_success_url())
+
+User = get_user_model()
+#プロフィール編集
+def profile(request):
+    if request.method == "POST":
+        user = request.user
+        user.email = request.POST["email"]
+        user.username = request.POST["username"]
+        user.save()
+        return redirect("profile")
+    else:
+        return render(request, "myapp/profile.html")

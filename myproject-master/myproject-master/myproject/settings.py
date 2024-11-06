@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     "myapp",
-    'accounts.apps.AccountsConfig',
     'django_extensions',
     'django_bootstrap5',
 ]
@@ -60,7 +59,6 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [os.path.join(BASE_DIR, 'templates'),  # プロジェクト全体のテンプレートフォルダ
-            os.path.join(BASE_DIR, 'accounts', 'templates'),  # アカウントアプリのテンプレートフォルダ
             os.path.join(BASE_DIR, 'myapp', 'templates'),  # 他のアプリのテンプレートフォルダ
         ],# ここでテンプレートディレクトリを指定
         "APP_DIRS": True,
@@ -93,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
-        'PASSWORD': 'Sho1101tibi',  # パスワード
+        'PASSWORD': 'root',  # パスワード
         'HOST': 'localhost',  # ホスト (通常は'localhost')
         'PORT': '3306',  # ポート (通常は3306)
     }
@@ -153,5 +151,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_COOKIE_AGE = 30 * 60  # 秒数で指定
 SESSION_SAVE_EVERY_REQUEST = True  # 各リクエストでセッションの期限を更新
 
-AUTH_USER_MODEL = "accounts.User"
-LOGOUT_REDIRECT_URL = "/accounts/login"
+AUTH_USER_MODEL = "myapp.User"
+LOGOUT_REDIRECT_URL = "myapp/login"
+LOGIN_REDIRECT_URL = 'myapp:home'

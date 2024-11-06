@@ -1,7 +1,7 @@
 # scripts/insert_demo_data.py
 from django.utils import timezone
 from myapp.models import Employee, Questionnaire, DailyReport, QuestionnaireThreshold, DailyReportAnswer, QuestionnaireOption
-
+from myapp.models import User
 def run():
 
     # 既存のデータを削除
@@ -12,15 +12,30 @@ def run():
     DailyReportAnswer.objects.all().delete()
     QuestionnaireOption.objects.all().delete()
 
-    # 従業員データを作成
-    employees = [
-        {"name": "John Doe", "employee_type": "admin"},
-        {"name": "Jane Smith", "employee_type": "general"},
-        {"name": "Michael Johnson", "employee_type": "general"},
-    ]
-    for emp_data in employees:
-        employee, created = Employee.objects.get_or_create(**emp_data)
-        print(f'Employee created: {employee.name} (ID: {employee.id})')
+    #Userデータを作成
+users = [
+    {"username": "johndoe", "password": "password123", "email": "johndoe@example.com", },
+    {"username": "janesmith", "password": "password123", "email": "janesmith@example.com", },
+    {"username": "michaeljohnson", "password": "password123", "email": "michaeljohnson@example.com", },
+]
+
+# Employeeデータ
+employees = [
+    {"name": "John Doe", "employee_type": "admin"},
+    {"name": "Jane Smith", "employee_type": "general"},
+    {"name": "Michael Johnson", "employee_type": "general"},
+]
+
+# ユーザーと従業員を組み合わせて処理
+for user_data, emp_data in zip(users, employees):
+    # Userの作成
+    user = User.objects.create_user(**user_data)
+
+    # Employeeの作成（user_id が重複しないように確認）
+    emp_data["user"] = user
+    employee, created = Employee.objects.get_or_create(user=user, **emp_data)
+    
+    print(f"Employee created: {employee.name} (ID: {employee.id})")
 
     # アンケートデータを作成
     questionnaires = [

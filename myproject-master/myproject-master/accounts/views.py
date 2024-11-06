@@ -1,11 +1,18 @@
-from django.contrib.auth import login
-from django.shortcuts import redirect, render, get_object_or_404
+# 修正例
+from django.shortcuts import render, redirect, get_object_or_404  # Djangoのインポートは先に行う
+from django.http import HttpResponseForbidden
+from django.utils import timezone
+from django.contrib.auth import login, get_user_model
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.admin.views.decorators import staff_member_required
-from .forms.signup import SignUpForm
 
-from django.contrib.auth import get_user_model
+from rest_framework import generics  # 外部ライブラリのインポート
+
+from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, QuestionnaireThreshold, QuestionnaireOption
+from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
+from myapp.forms.signup import SignUpForm  # 最後にアプリ関連のインポートを行う
+
 
 
 def profile(request):
