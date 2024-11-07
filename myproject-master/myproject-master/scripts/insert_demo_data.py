@@ -12,44 +12,43 @@ def run():
     DailyReportAnswer.objects.all().delete()
     QuestionnaireOption.objects.all().delete()
 
-    #Userデータを作成
-  # Userデータ
+
 # Userデータ
-users = [
-    {"username": "johndoe", "password": "t3stpass1", "email": "johndoe@example.com","employee_type":"admin"},
-    {"username": "janesmith", "password": "t3stpass2", "email": "janesmith@example.com"},
-    {"username": "michaeljohnson", "password": "t3stpass3", "email": "michaeljohnson@example.com"},
-]
+    users = [
+        {"username": "johndoe", "password": "t3stpass1", "email": "johndoe@example.com","employee_type":"admin"},
+        {"username": "janesmith", "password": "t3stpass2", "email": "janesmith@example.com"},
+        {"username": "michaeljohnson", "password": "t3stpass3", "email": "michaeljohnson@example.com"},
+    ]
 
 # Employeeデータ
-employees = [
-    {"name": "John Doe", "employee_type": "admin"},
-    {"name": "Jane Smith", "employee_type": "general"},
-    {"name": "Michael Johnson", "employee_type": "general"},
-]
+    employees = [
+        {"name": "John Doe", "employee_type": "admin"},
+        {"name": "Jane Smith", "employee_type": "general"},
+        {"name": "Michael Johnson", "employee_type": "general"},
+    ]
 
 # ユーザーと従業員を組み合わせて処理
-for user_data, emp_data in zip(users, employees):
-    # Userの作成（すでに存在する場合はスキップ）
-    user, created = User.objects.get_or_create(username=user_data['username'], defaults={k: v for k, v in user_data.items() if k != 'password'})
+    for user_data, emp_data in zip(users, employees):
+        # Userの作成（すでに存在する場合はスキップ）
+        user, created = User.objects.get_or_create(username=user_data['username'], defaults={k: v for k, v in user_data.items() if k != 'password'})
 
-    # Userが新規作成された場合のみパスワードをセット
-    if created:
-        user.set_password(user_data['password'])  # パスワードをハッシュ化
-        user.save()
+        # Userが新規作成された場合のみパスワードをセット
+        if created:
+            user.set_password(user_data['password'])  # パスワードをハッシュ化
+            user.save()
 
-    # Employeeの作成（user_id が重複しないように確認）
-    emp_data["user"] = user
-    
-    # Employeeの新規作成（すでに存在する場合はスキップ）
-    employee, created = Employee.objects.get_or_create(user=user, defaults=emp_data)
-    
-    # 新規作成された場合のみログを出力
-    if created:
-        print(f"Employee created: {employee.name} (ID: {employee.id})")
+        # Employeeの作成（user_id が重複しないように確認）
+        emp_data["user"] = user
+        
+        # Employeeの新規作成（すでに存在する場合はスキップ）
+        employee, created = Employee.objects.get_or_create(user=user, defaults=emp_data)
+        
+        # 新規作成された場合のみログを出力
+        if created:
+            print(f"Employee created: {employee.name} (ID: {employee.id})")
 
     # アンケートデータを作成
-questionnaires = [
+    questionnaires = [
         {"title": "就寝時間", "type": "morning", "answer_type": "time_select"},
         {"title": "起床時間", "type": "morning", "answer_type": "time_select"},
         {"title": "睡眠の質", "type": "morning", "answer_type": "select"},
@@ -73,22 +72,22 @@ questionnaires = [
         {"title": "回復ルーティン", "type": "morning", "answer_type": "text"},
         {"title": "自身の余裕度", "type": "morning", "answer_type": "select"},
     ]
-for q_data in questionnaires:
-        questionnaire, created = Questionnaire.objects.get_or_create(**q_data)
-        print(f'Questionnaire created: {questionnaire.title} (ID: {questionnaire.id})')
+    for q_data in questionnaires:
+            questionnaire, created = Questionnaire.objects.get_or_create(**q_data)
+            print(f'Questionnaire created: {questionnaire.title} (ID: {questionnaire.id})')
 
     # デイリーレポートデータを作成
-daily_reports = [
+    daily_reports = [
         {"employee_id": 1, "report_datetime": timezone.now(), "report_type": "morning"},
         {"employee_id": 2, "report_datetime": timezone.now(), "report_type": "morning"},
         {"employee_id": 3, "report_datetime": timezone.now(), "report_type": "evening"},
     ]
-for report_data in daily_reports:
+    for report_data in daily_reports:
         report, created = DailyReport.objects.get_or_create(**report_data)
         print(f'Daily Report created: ID {report.id}')
 
     # 質問の閾値データを作成
-thresholds = [
+    thresholds = [
         {"employee_id": 1, "questionnaire_id": 3, "threshold_min": 0, "threshold_max": 3},
         {"employee_id": 1, "questionnaire_id": 4, "threshold_min": 0, "threshold_max": 1},
         {"employee_id": 1, "questionnaire_id": 6, "threshold_min": 0, "threshold_max": 3},
@@ -106,12 +105,12 @@ thresholds = [
         {"employee_id": 1, "questionnaire_id": 22, "threshold_min": 0, "threshold_max": 3},
 
     ]
-for threshold_data in thresholds:
+    for threshold_data in thresholds:
         threshold, created = QuestionnaireThreshold.objects.get_or_create(**threshold_data)
         print(f'Threshold created: ID {threshold.id}')
 
     # デイリーレポート回答データを作成
-answers = [
+    answers = [
         {"daily_report_id": 1, "questionnaire_id": 1, "answer": "22:30"},  # 就寝時間（時間選択）
         {"daily_report_id": 1, "questionnaire_id": 2, "answer": "07:00"},  # 起床時間（時間選択）
         {"daily_report_id": 1, "questionnaire_id": 3, "answer": 1},  # 睡眠の質（選択）
@@ -136,12 +135,12 @@ answers = [
         {"daily_report_id": 1, "questionnaire_id": 22, "answer": 3},  # 自身の余裕度（選択）
     ]
 
-for answer_data in answers:
+    for answer_data in answers:
         answer, created = DailyReportAnswer.objects.get_or_create(**answer_data)
         print(f'Daily Report Answer created: ID {answer.id}')
 
     # 質問の選択肢データを作成
-options = [
+    options = [
         {"questionnaire_id": 3, "option_text": "良い", "option_value": 1},
         {"questionnaire_id": 3, "option_text": "少し良い", "option_value": 2},
         {"questionnaire_id": 3, "option_text": "普通", "option_value": 3},
@@ -207,8 +206,8 @@ options = [
         {"questionnaire_id": 22, "option_text": "余裕がない", "option_value": 5},
     ]
 
-for option_data in options:
+    for option_data in options:
         option, created = QuestionnaireOption.objects.get_or_create(**option_data)
         print(f'Option created: {option.option_text} for Questionnaire ID {option.questionnaire_id}')
 
-print("Demo data inserted successfully.")
+    print("Demo data inserted successfully.")
