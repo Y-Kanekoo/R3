@@ -1,8 +1,4 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import (AbstractBaseUser,BaseUserManager,PermissionsMixin,)
 from django.db import models
 
 
@@ -34,4 +30,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["username"]
 
     class Meta:
-        db_table = 'accounts'  # この行でテーブル名を指定
+        db_table = 'myapp_user'  # この行でテーブル名を指定
