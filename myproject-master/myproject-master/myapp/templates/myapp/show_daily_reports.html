@@ -13,24 +13,20 @@
       <nav>
         <ul class="menu">
           <li><a href="{% url 'show_employees' %}">社員リスト</a></li>
-          <li>
-            <a href="{% url 'show_questionnaires' %}">アンケートリスト</a>
-          </li>
+          <li><a href="{% url 'show_questionnaires' %}">アンケートリスト</a></li>
         </ul>
       </nav>
     </header>
-    
-    
 
     <table border="1">
       <thead>
         <tr>
-          <th>レポートID</th>
-          <th>従業員ID</th>
-          <th>レポート日時</th>
-          <th>レポートタイプ</th>
-          <th>作成日時</th>
-          <th>更新日時</th>
+          <th><a href="?sort=id&direction={% if current_sort == 'id' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートID</a></th>
+          <th><a href="?sort=employee&direction={% if current_sort == 'employee' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">従業員ID</a></th>
+          <th><a href="?sort=report_datetime&direction={% if current_sort == 'report_datetime' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポート日時</a></th>
+          <th><a href="?sort=report_type&direction={% if current_sort == 'report_type' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートタイプ</a></th>
+          <th><a href="?sort=created_at&direction={% if current_sort == 'created_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">作成日時</a></th>
+          <th><a href="?sort=updated_at&direction={% if current_sort == 'updated_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">更新日時</a></th>
           {% for question in questionnaires %}
           <th>{{ question.title }}</th>
           {% endfor %}

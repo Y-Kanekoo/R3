@@ -119,9 +119,7 @@ def show_daily_reports(request):
     # 質問を取得
     questionnaires = Questionnaire.objects.all().order_by('id')
     # 回答を取得して質問の順にソート
-    answers = DailyReportAnswer.objects.select_related(
-        'questionnaire').order_by('questionnaire__id')
-
+    answers = DailyReportAnswer.objects.select_related('questionnaire').order_by('questionnaire__id')
     # 質問の選択肢を取得して辞書に整理
     options = QuestionnaireOption.objects.all()
     option_dict = {
