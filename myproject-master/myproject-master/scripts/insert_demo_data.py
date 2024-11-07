@@ -13,30 +13,37 @@ def run():
     QuestionnaireOption.objects.all().delete()
 
     #Userデータを作成
-users = [
+    users = [
     {"username": "johndoe", "password": "password123", "email": "johndoe@example.com", },
     {"username": "janesmith", "password": "password123", "email": "janesmith@example.com", },
-    {"username": "michaeljohnson", "password": "password123", "email": "michaeljohnson@example.com", },
-]
-
+    {"username": "michaeljohnson", "password": "password123", "email": "michaeljohnson@example.com", },]
 # Employeeデータ
-employees = [
+    employees = [
     {"name": "John Doe", "employee_type": "admin"},
     {"name": "Jane Smith", "employee_type": "general"},
-    {"name": "Michael Johnson", "employee_type": "general"},
-]
+    {"name": "Michael Johnson", "employee_type": "general"},]
 
 # ユーザーと従業員を組み合わせて処理
-for user_data, emp_data in zip(users, employees):
-    # Userの作成
-    user = User.objects.create_user(**user_data)
+    for user_data, emp_data in zip(users, employees):
+    # Userの作成（すでに存在する場合はスキップ）
+        user, created = User.objects.get_or_create(username=user_data['username'], defaults=user_data)
+    
+    # Userが新規作成された場合のみパスワードをセット
+    if created:
+        user.set_password(user_data['password'])
+        user.save()
 
     # Employeeの作成（user_id が重複しないように確認）
     emp_data["user"] = user
-    employee, created = Employee.objects.get_or_create(user=user, **emp_data)
+    
+    # Employeeがすでに存在するか確認
+    employee = Employee.objects.filter(user=user).first()
+    
+    # Employeeが存在しない場合は新しく作成
+    if not employee:
+        employee = Employee.objects.create(user=user, name=emp_data["name"], employee_type=emp_data["employee_type"])
     
     print(f"Employee created: {employee.name} (ID: {employee.id})")
-
     # アンケートデータを作成
     questionnaires = [
         {"title": "就寝時間", "type": "morning", "answer_type": "time_select"},
