@@ -1,7 +1,7 @@
 # scripts/insert_demo_data.py
 from django.utils import timezone
 from myapp.models import Employee, Questionnaire, DailyReport, QuestionnaireThreshold, DailyReportAnswer, QuestionnaireOption
-
+from myapp.models import User
 def run():
 
     # 既存のデータを削除
@@ -12,41 +12,56 @@ def run():
     DailyReportAnswer.objects.all().delete()
     QuestionnaireOption.objects.all().delete()
 
-    # 従業員データを作成
-    employees = [
-        {"name": "John Doe", "employee_type": "admin"},
-        {"name": "Jane Smith", "employee_type": "general"},
-        {"name": "Michael Johnson", "employee_type": "general"},
-    ]
-    for emp_data in employees:
-        employee, created = Employee.objects.get_or_create(**emp_data)
-        print(f'Employee created: {employee.name} (ID: {employee.id})')
+    #Userデータを作成
+users = [
+    {"username": "johndoe", "password": "password123", "email": "johndoe@example.com", },
+    {"username": "janesmith", "password": "password123", "email": "janesmith@example.com", },
+    {"username": "michaeljohnson", "password": "password123", "email": "michaeljohnson@example.com", },
+]
+
+# Employeeデータ
+employees = [
+    {"name": "John Doe", "employee_type": "admin"},
+    {"name": "Jane Smith", "employee_type": "general"},
+    {"name": "Michael Johnson", "employee_type": "general"},
+]
+
+# ユーザーと従業員を組み合わせて処理
+for user_data, emp_data in zip(users, employees):
+    # Userの作成
+    user = User.objects.create_user(**user_data)
+
+    # Employeeの作成（user_id が重複しないように確認）
+    emp_data["user"] = user
+    employee, created = Employee.objects.get_or_create(user=user, **emp_data)
+    
+    print(f"Employee created: {employee.name} (ID: {employee.id})")
 
     # アンケートデータを作成
     questionnaires = [
-    {"title": "就寝時間", "type": "morning", "answer_type": "time_select"},
-    {"title": "起床時間", "type": "morning", "answer_type": "time_select"},
-    {"title": "睡眠の質", "type": "morning", "answer_type": "select"},
-    {"title": "今朝の朝食を食べたか", "type": "morning", "answer_type": "select"},
-    {"title": "薬を飲んだ時間", "type": "morning", "answer_type": "time_select"},
-    {"title": "自分の状態", "type": "morning", "answer_type": "select"},
-    {"title": "自分の状態の詳細（自由記述）", "type": "morning", "answer_type": "text"},
-    {"title": "不安感のレベル", "type": "morning", "answer_type": "select"},
-    {"title": "今の感情", "type": "morning", "answer_type": "select"},
-    {"title": "コミュニケーションの意欲", "type": "morning", "answer_type": "select"},
-    {"title": "体の調子", "type": "morning", "answer_type": "select"},
-    {"title": "集中力の調子", "type": "morning", "answer_type": "select"},
-    {"title": "体の不調", "type": "morning", "answer_type": "select"},
-    {"title": "自己肯定感", "type": "morning", "answer_type": "select"},
-    {"title": "誰かに頼っても良いか", "type": "morning", "answer_type": "select"},
-    {"title": "自分が必要とされているか", "type": "morning", "answer_type": "select"},
-    {"title": "その他の気になる症状", "type": "morning", "answer_type": "select"},
-    {"title": "仕事に対して配慮が必要か", "type": "morning", "answer_type": "select"},
-    {"title": "仕事に対して配慮が必要かの詳細", "type": "morning", "answer_type": "text"},
-    {"title": "伝えたいこと", "type": "morning", "answer_type": "text"},
-    {"title": "回復ルーティン", "type": "morning", "answer_type": "text"},
-    {"title": "自身の余裕度", "type": "morning", "answer_type": "select"},
-]
+        {"title": "就寝時間", "type": "morning", "answer_type": "time_select"},
+        {"title": "起床時間", "type": "morning", "answer_type": "time_select"},
+        {"title": "睡眠の質", "type": "morning", "answer_type": "select"},
+        {"title": "今朝の朝食を食べたか", "type": "morning", "answer_type": "select"},
+        {"title": "薬を飲んだ時間", "type": "morning", "answer_type": "time_select"},
+        {"title": "自分の状態", "type": "morning", "answer_type": "select"},
+        {"title": "自分の状態の詳細（自由記述）", "type": "morning", "answer_type": "text"},
+        {"title": "不安感のレベル", "type": "morning", "answer_type": "select"},
+        {"title": "今の感情", "type": "morning", "answer_type": "select"},
+        {"title": "コミュニケーションの意欲", "type": "morning", "answer_type": "select"},
+        {"title": "体の調子", "type": "morning", "answer_type": "select"},
+        {"title": "集中力の調子", "type": "morning", "answer_type": "select"},
+        {"title": "体の不調", "type": "morning", "answer_type": "select"},
+        {"title": "自己肯定感", "type": "morning", "answer_type": "select"},
+        {"title": "誰かに頼っても良いか", "type": "morning", "answer_type": "select"},
+        {"title": "自分が必要とされているか", "type": "morning", "answer_type": "select"},
+        {"title": "その他の気になる症状", "type": "morning", "answer_type": "select"},
+        {"title": "仕事に対して配慮が必要か", "type": "morning", "answer_type": "select"},
+        {"title": "仕事に対して配慮が必要かの詳細", "type": "morning", "answer_type": "text"},
+        {"title": "伝えたいこと", "type": "morning", "answer_type": "text"},
+        {"title": "回復ルーティン", "type": "morning", "answer_type": "text"},
+        {"title": "自身の余裕度", "type": "morning", "answer_type": "select"},
+    ]
     for q_data in questionnaires:
         questionnaire, created = Questionnaire.objects.get_or_create(**q_data)
         print(f'Questionnaire created: {questionnaire.title} (ID: {questionnaire.id})')

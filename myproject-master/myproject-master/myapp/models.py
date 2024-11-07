@@ -3,15 +3,77 @@
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import (AbstractBaseUser,BaseUserManager,PermissionsMixin,)
+
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        email = self.normalize_email(email)
+        # 'employee_type' フィールドを渡す
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        # 'employee_type' を 'admin' に設定
+        extra_fields.setdefault("employee_type", "admin")  
+        extra_fields.setdefault("is_superuser", True)  # 'is_superuser' は PermissionsMixin に必要
+        extra_fields.setdefault("is_active", True)  # 'is_active' も必要
+        return self.create_user(username, email, password, **extra_fields)
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(unique=True, max_length=255)
+    email = models.EmailField(unique=True)
+    is_active = models.BooleanField(default=True)
+    employee_type = models.CharField(
+        max_length=10,
+        choices=[('admin', 'Admin'), ('general', 'General')],
+        default='general'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
+
+    def save(self, *args, **kwargs):
+        # Userモデルのデータを保存する前にEmployeeモデルの共通データを保存
+        super().save(*args, **kwargs)
+
+        # Employeeに共通データを保存
+        if not hasattr(self, 'employee'):
+            Employee.objects.create(
+                user=self,
+                employee_type=self.employee_type,  # Userのemployee_typeをEmployeeにコピー
+            )
+
+    class Meta:
+        db_table = 'myapp_user'  # この行でテーブル名を指定
+
+
 
 class Employee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     employee_type = models.CharField(
         max_length=10, choices=[('admin', 'Admin'), ('general', 'General')]
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def save(self, *args, **kwargs):
+        # `Employee` が保存される際に `User` の `username` を `name` にコピーする
+        if not self.name:  # `name` がまだ設定されていない場合
+            self.name = self.user.username  # Userのusernameをnameにコピー
+        if not self.employee_type:  # `employee_type` が設定されていない場合
+            self.employee_type = self.user.employee_type  # Userのemployee_typeをコピー
+        super().save(*args, **kwargs)
 
+    def __str__(self):
+        return self.name
 
 class DailyReportMorning(models.Model):
     name = models.CharField(max_length=255)
@@ -67,7 +129,8 @@ class QuestionnaireOption(models.Model):
 
 class QuestionnaireThreshold(models.Model):
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
-    questionnaire = models.ForeignKey('Questionnaire', on_delete=models.CASCADE)
+    questionnaire = models.ForeignKey(
+        'Questionnaire', on_delete=models.CASCADE)
     threshold_min = models.IntegerField(null=True, blank=True)
     threshold_max = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -102,6 +165,6 @@ class DailyReportAnswer(models.Model):
     # threshold_value = models.IntegerField(null=True, blank=True)  # threshold_value フィールドを追加
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = 'daily_report_answers'
-
