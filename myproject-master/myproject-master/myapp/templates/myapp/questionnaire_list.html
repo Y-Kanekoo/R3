@@ -3,14 +3,35 @@
 <h2>アンケート一覧</h2>
 <a href="{% url 'myapp:questionnaire_create' %}">新規アンケート作成</a>
 
-<ul>
-    {% for questionnaire in questionnaires %}
-    <li>
-        {{ questionnaire.title }} ({{ questionnaire.type }})
-        <a href="{% url 'myapp:questionnaire_update' questionnaire.pk %}">編集</a>
-        <!-- 削除ボタンにJavaScriptの確認を追加 -->
-        <a href="{% url 'myapp:questionnaire_delete' questionnaire.pk %}"
-            onclick="return confirm('本当にこのアンケートを削除しますか？');">削除</a>
-    </li>
-    {% endfor %}
-</ul>
+{% if questionnaires %}
+<table>
+    <thead>
+        <tr>
+            <th>タイトル</th>
+            <th>タイプ</th>
+            <th>回答形式</th>
+            <th>作成日</th>
+            <th>更新日</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for questionnaire in questionnaires %}
+        <tr>
+            <td>{{ questionnaire.title }}</td>
+            <td>{{ questionnaire.type }}</td>
+            <td>{{ questionnaire.answer_type }}</td>
+            <td>{{ questionnaire.created_at|date:"Y-m-d" }}</td>
+            <td>{{ questionnaire.updated_at|date:"Y-m-d" }}</td>
+            <td>
+                <a href="{% url 'myapp:questionnaire_update' questionnaire.pk %}">編集</a> |
+                <a href="{% url 'myapp:questionnaire_delete' questionnaire.pk %}"
+                    onclick="return confirm('本当にこのアンケートを削除しますか？');">削除</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>現在、アンケートが存在しません。</p>
+{% endif %}
