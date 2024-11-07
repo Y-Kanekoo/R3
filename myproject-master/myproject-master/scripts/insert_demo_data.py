@@ -101,28 +101,28 @@ for user_data, emp_data in zip(users, employees):
 
     # デイリーレポート回答データを作成
     answers = [
-        {"daily_report_id": 1, "questionnaire_id": 1, "answer": "22:30", "threshold_value": 3},  # 就寝時間（時間選択）
-        {"daily_report_id": 1, "questionnaire_id": 2, "answer": "07:00", "threshold_value": 3},  # 起床時間（時間選択）
-        {"daily_report_id": 1, "questionnaire_id": 3, "answer": 1, "threshold_value": 3},  # 睡眠の質（選択）
-        {"daily_report_id": 1, "questionnaire_id": 4, "answer": 2, "threshold_value": 3},  # 今朝の朝食を食べたか（選択）
-        {"daily_report_id": 1, "questionnaire_id": 5, "answer": "08:00", "threshold_value": 3},  # 薬を飲んだ時間（時間選択）
-        {"daily_report_id": 1, "questionnaire_id": 6, "answer": 4, "threshold_value": 3},  # 自分の状態（選択）
-        {"daily_report_id": 1, "questionnaire_id": 7, "answer": "体調は安定しているが、少し疲れを感じる。", "threshold_value": 5},  # 自分の状態の詳細（記述）
-        {"daily_report_id": 1, "questionnaire_id": 8, "answer": 3, "threshold_value": 3},  # 不安感のレベル（選択）
-        {"daily_report_id": 1, "questionnaire_id": 9, "answer": 1, "threshold_value": 3},  # 今の感情（選択）
-        {"daily_report_id": 1, "questionnaire_id": 10, "answer": 4, "threshold_value": 3},  # コミュニケーションの意欲（選択）
-        {"daily_report_id": 1, "questionnaire_id": 11, "answer": 3, "threshold_value": 3},  # 体の調子（選択）
-        {"daily_report_id": 1, "questionnaire_id": 12, "answer": 3, "threshold_value": 3},  # 集中力の調子（選択）
-        {"daily_report_id": 1, "questionnaire_id": 13, "answer": 2, "threshold_value": 3},  # 体の不調（選択）
-        {"daily_report_id": 1, "questionnaire_id": 14, "answer": 3, "threshold_value": 3},  # 自己肯定感（選択）
-        {"daily_report_id": 1, "questionnaire_id": 15, "answer": 1, "threshold_value": 3},  # 誰かに頼っても良いか（選択）
-        {"daily_report_id": 1, "questionnaire_id": 16, "answer": 2, "threshold_value": 3},  # 自分が必要とされているか（選択）
-        {"daily_report_id": 1, "questionnaire_id": 17, "answer": 3, "threshold_value": 3},  # その他の気になる症状（選択）
-        {"daily_report_id": 1, "questionnaire_id": 18, "answer": 2, "threshold_value": 3},  # 仕事に対して配慮が必要か（選択）
-        {"daily_report_id": 1, "questionnaire_id": 19, "answer": "仕事の調整が必要です。", "threshold_value": 5},  # 仕事に対して配慮が必要かの詳細（記述）
-        {"daily_report_id": 1, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。", "threshold_value": 5},  # 伝えたいこと（記述）
-        {"daily_report_id": 1, "questionnaire_id": 21, "answer": "深呼吸とストレッチを行った。", "threshold_value": 5},  # 回復ルーティン（記述）
-        {"daily_report_id": 1, "questionnaire_id": 22, "answer": 3, "threshold_value": 3},  # 自身の余裕度（選択）
+        {"daily_report_id": 1, "questionnaire_id": 1, "answer": "22:30"},  # 就寝時間（時間選択）
+        {"daily_report_id": 1, "questionnaire_id": 2, "answer": "07:00"},  # 起床時間（時間選択）
+        {"daily_report_id": 1, "questionnaire_id": 3, "answer": 1},  # 睡眠の質（選択）
+        {"daily_report_id": 1, "questionnaire_id": 4, "answer": 2},  # 今朝の朝食を食べたか（選択）
+        {"daily_report_id": 1, "questionnaire_id": 5, "answer": "08:00"},  # 薬を飲んだ時間（時間選択）
+        {"daily_report_id": 1, "questionnaire_id": 6, "answer": 4},  # 自分の状態（選択）
+        {"daily_report_id": 1, "questionnaire_id": 7, "answer": "体調は安定しているが、少し疲れを感じる。"},  # 自分の状態の詳細（記述）
+        {"daily_report_id": 1, "questionnaire_id": 8, "answer": 3},  # 不安感のレベル（選択）
+        {"daily_report_id": 1, "questionnaire_id": 9, "answer": 1},  # 今の感情（選択）
+        {"daily_report_id": 1, "questionnaire_id": 10, "answer": 4},  # コミュニケーションの意欲（選択）
+        {"daily_report_id": 1, "questionnaire_id": 11, "answer": 3},  # 体の調子（選択）
+        {"daily_report_id": 1, "questionnaire_id": 12, "answer": 3},  # 集中力の調子（選択）
+        {"daily_report_id": 1, "questionnaire_id": 13, "answer": 2},  # 体の不調（選択）
+        {"daily_report_id": 1, "questionnaire_id": 14, "answer": 3},  # 自己肯定感（選択）
+        {"daily_report_id": 1, "questionnaire_id": 15, "answer": 1},  # 誰かに頼っても良いか（選択）
+        {"daily_report_id": 1, "questionnaire_id": 16, "answer": 2},  # 自分が必要とされているか（選択）
+        {"daily_report_id": 1, "questionnaire_id": 17, "answer": 3},  # その他の気になる症状（選択）
+        {"daily_report_id": 1, "questionnaire_id": 18, "answer": 2},  # 仕事に対して配慮が必要か（選択）
+        {"daily_report_id": 1, "questionnaire_id": 19, "answer": "仕事の調整が必要です。"},  # 仕事に対して配慮が必要かの詳細（記述）
+        {"daily_report_id": 1, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。"},  # 伝えたいこと（記述）
+        {"daily_report_id": 1, "questionnaire_id": 21, "answer": "深呼吸とストレッチを行った。"},  # 回復ルーティン（記述）
+        {"daily_report_id": 1, "questionnaire_id": 22, "answer": 3},  # 自身の余裕度（選択）
     ]
 
     for answer_data in answers:

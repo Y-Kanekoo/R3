@@ -195,6 +195,8 @@ def show_daily_reports(request):
 
 
 
+
+# 修正後のsubmit_answers関数
 def submit_answers(request):
     if request.method == 'POST':
         # フォームから送信されたemployee_idを取得し、該当する社員を取得
@@ -217,16 +219,11 @@ def submit_answers(request):
                 questionnaire_id = int(key.split('_')[1])  # 質問IDを取得
                 answer_value = request.POST[key]  # 回答を取得
 
-                # 閾値を取得する
-                threshold = get_object_or_404(QuestionnaireThreshold, questionnaire_id=questionnaire_id)
-                threshold_value = threshold.threshold_value if threshold else None
-
-                # DailyReportAnswerを作成
+                # DailyReportAnswerを作成 (threshold_valueを使用せずに)
                 DailyReportAnswer.objects.create(
                     daily_report=daily_report,
                     questionnaire_id=questionnaire_id,
                     answer=answer_value,
-                    threshold_value=threshold_value  # 閾値の値をここで指定
                 )
 
         # 回答が保存された後、日報の表示ページにリダイレクト
