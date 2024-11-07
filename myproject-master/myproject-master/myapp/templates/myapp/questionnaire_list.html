@@ -1,0 +1,16 @@
+<!-- myapp/templates/myapp/questionnaire_list.html -->
+
+<h2>アンケート一覧</h2>
+<a href="{% url 'myapp:questionnaire_create' %}">新規アンケート作成</a>
+
+<ul>
+    {% for questionnaire in questionnaires %}
+    <li>
+        {{ questionnaire.title }} ({{ questionnaire.type }})
+        <a href="{% url 'myapp:questionnaire_update' questionnaire.pk %}">編集</a>
+        <!-- 削除ボタンにJavaScriptの確認を追加 -->
+        <a href="{% url 'myapp:questionnaire_delete' questionnaire.pk %}"
+            onclick="return confirm('本当にこのアンケートを削除しますか？');">削除</a>
+    </li>
+    {% endfor %}
+</ul>

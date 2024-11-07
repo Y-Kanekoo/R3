@@ -1,7 +1,7 @@
 # forms.py
 
 from django import forms
-from .models import Employee
+from .models import Employee, Questionnaire
 
 
 class EmployeeForm(forms.ModelForm):
@@ -17,3 +17,9 @@ class EmployeeForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '名前を入力'}),
             'employee_type': forms.Select(attrs={'class': 'form-select'}),
         }
+
+# アンケートデータの入力フォーム
+class QuestionnaireForm(forms.ModelForm):
+    class Meta:
+        model = Questionnaire
+        fields = ['title', 'type', 'answer_type']

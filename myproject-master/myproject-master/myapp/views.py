@@ -9,7 +9,7 @@ from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyRep
 from django.utils import timezone
 import requests
 from django.contrib import messages
-from .forms import EmployeeForm
+from .forms import EmployeeForm, QuestionnaireForm
 from django.db.models import Q
 from django.urls import reverse_lazy,reverse
 from django.views.generic.edit import CreateView
@@ -33,70 +33,6 @@ def show_employees(request):
     response = requests.get('http://127.0.0.1:8000/api/EmployeesList/')
     employees = response.json()  # APIから取得したデータをJSON形式で読み込む
     return render(request, 'myapp/show_employees.html', {'employees': employees})
-
-
-def employee_management(request, employee_id=None):
-    # ソート用のパラメータを取得
-    sort_by = request.GET.get('sort', 'name')  # デフォルトは名前でソート
-    direction = request.GET.get('direction', 'asc')  # デフォルトは昇順
-
-    # ソート条件の設定
-    if direction == 'desc':
-        sort_by = f'-{sort_by}'
-
-    # 従業員一覧の取得（ソート適用）
-    employees = Employee.objects.all().order_by(sort_by)
-
-    # 編集対象の従業員取得
-    employee = get_object_or_404(
-        Employee, id=employee_id) if employee_id else None
-
-    if request.method == 'POST':
-        if 'delete' in request.POST:
-            if employee:
-                employee.delete()
-                messages.success(request, f'{employee.name}さんを削除しました。')
-                return redirect('employee_management')
-        else:
-            # 追加・編集の処理
-            name = request.POST.get('name')
-            employee_type = request.POST.get('employee_type')
-
-            if not name:
-                messages.error(request, '名前を入力してください。')
-            else:
-                # 重複チェック
-                duplicate = Employee.objects.filter(
-                    Q(name=name) &
-                    Q(employee_type=employee_type)
-                ).exclude(id=employee_id).exists()
-
-                if duplicate:
-                    messages.error(request, 'この名前とタイプの組み合わせは既に存在します。')
-                else:
-                    if employee:
-                        # 更新
-                        employee.name = name
-                        employee.employee_type = employee_type
-                        employee.save()
-                        messages.success(request, f'{name}さんの情報を更新しました。')
-                    else:
-                        # 新規作成
-                        Employee.objects.create(
-                            name=name, employee_type=employee_type)
-                        messages.success(request, f'{name}さんを追加しました。')
-                    return redirect('employee_management')
-
-    # テンプレートに渡すコンテキスト
-    context = {
-        'employees': employees,
-        'editing_employee': employee,
-        'employee_types': Employee.EMPLOYEE_TYPE_CHOICES,
-        'current_sort': sort_by.replace('-', ''),
-        'current_direction': direction,
-    }
-
-    return render(request, 'myapp/employee_management.html', context)
 
 
 class QuestionnairesList(generics.ListAPIView):
@@ -190,10 +126,6 @@ def show_daily_reports(request):
     })
 
 
-
-
-
-
 # 修正後のsubmit_answers関数
 def submit_answers(request):
     if request.method == 'POST':
@@ -277,3 +209,49 @@ def profile(request):
         return redirect("profile")
     else:
         return render(request, "myapp/profile.html")
+
+# アンケート一覧表示ビュー
+def questionnaire_list(request):
+    # すべてのアンケートを取得
+    questionnaires = Questionnaire.objects.all()
+    return render(request, 'myapp/questionnaire_list.html', {'questionnaires': questionnaires})
+
+# 新しいアンケートを作成するビュー
+def questionnaire_create(request):
+    if request.method == 'POST':
+        form = QuestionnaireForm(request.POST)
+        if form.is_valid():
+            # フォームが有効な場合、アンケートを保存
+            form.save()
+            messages.success(request, "アンケートが作成されました。")
+            return redirect('myapp:questionnaire_list')
+    else:
+        form = QuestionnaireForm()
+    return render(request, 'myapp/questionnaire_form.html', {'form': form})
+
+# 既存のアンケートを編集するビュー
+def questionnaire_update(request, pk):
+    # 編集対象のアンケートを取得
+    questionnaire = get_object_or_404(Questionnaire, pk=pk)
+    if request.method == 'POST':
+        form = QuestionnaireForm(request.POST, instance=questionnaire)
+        if form.is_valid():
+            # フォームが有効な場合、変更内容を保存
+            form.save()
+            messages.success(request, "アンケートが更新されました。")
+            return redirect('myapp:questionnaire_list')
+    else:
+        form = QuestionnaireForm(instance=questionnaire)
+    return render(request, 'myapp/questionnaire_form.html', {'form': form})
+
+# アンケートを削除するビュー
+def questionnaire_delete(request, pk):
+    # 指定されたアンケートが存在するか確認
+    questionnaire = Questionnaire.objects.filter(pk=pk).first()
+    if questionnaire:
+        questionnaire.delete()
+        messages.success(request, "アンケートが削除されました。")  # 削除成功メッセージ
+    else:
+        messages.error(request, "指定されたアンケートは存在しません。")  # エラーメッセージ
+    # 一覧画面にリダイレクト
+    return redirect('myapp:questionnaire_list')
