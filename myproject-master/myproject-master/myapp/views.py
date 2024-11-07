@@ -245,7 +245,7 @@ class CustomLoginView(LoginView):
     authentication_form = AuthenticationForm  # 認証フォームを指定
     redirect_authenticated_user = True  # ログイン済みユーザーはリダイレクトされる
     # `remember me`オプションを追加したい場合、セッションを拡張するためにオプション設定を追加
-def get_success_url(self):
+    def get_success_url(self):
         return reverse_lazy('myapp:home') 
 class CustomLogoutView(LogoutView):
      def get_next_page(self):
