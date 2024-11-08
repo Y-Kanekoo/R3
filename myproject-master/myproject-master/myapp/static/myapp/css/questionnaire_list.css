@@ -1,0 +1,83 @@
+/* 基本スタイル */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+/* リンクのスタイル */
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+/* テーブルのスタイル */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+td {
+    background-color: #f9f9f9;
+}
+
+/* 操作ボタンのスタイル */
+.actions a {
+    margin-right: 10px;
+}
+
+.actions a:hover {
+    text-decoration: underline;
+}
+
+/* 空のメッセージスタイル */
+.empty-message {
+    text-align: center;
+    color: #999;
+}
+
+/* 作成リンクボタンのスタイル */
+.create-link {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.create-link .btn-primary {
+    color: white;
+    background-color: #007bff;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.create-link .btn-primary:hover {
+    background-color: #0056b3;
+}

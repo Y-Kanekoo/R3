@@ -1,11 +1,28 @@
-<!-- myapp/templates/myapp/questionnaire_form.html -->
 
-<h2>アンケート作成</h2>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンケート作成</title>
+    <!-- 外部CSSファイルをリンク -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/questionnaire_form.css' %}">
+</head>
+<body>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">保存</button>
-</form>
+<div class="container">
+    <h2>アンケート作成</h2>
 
-<a href="{% url 'myapp:questionnaire_list' %}">アンケート一覧に戻る</a>
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a href="{% url 'myapp:questionnaire_list' %}" class="btn btn-secondary">アンケート一覧に戻る</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

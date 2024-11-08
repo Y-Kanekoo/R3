@@ -1,33 +1,54 @@
-<!-- myapp/templates/myapp/submit_answers.html -->
-<form method="post">
-    {% csrf_token %}
-    <label for="employee_id">Employee ID:</label>
-    <input type="text" id="employee_id" name="employee_id" required><br>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回答の提出</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/submit_answers.css' %}">
+</head>
+<body>
 
-    {% for questionnaire in questionnaires %}
-        <label>{{ questionnaire.title }}</label><br>
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Employee ID field with label -->
+        <div class="form-group">
+            <label for="employee_id">従業員ID:</label>
+            <input type="text" id="employee_id" name="employee_id" required>
+        </div>
 
-        {% with options_found=False %}
-            {% for option in options %}
-                {% if option.questionnaire.id == questionnaire.id %}
-                    <input type="radio" id="questionnaire_{{ questionnaire.id }}_{{ option.id }}" name="questionnaire_{{ questionnaire.id }}" value="{{ option.option_value }}" required>
-                    <label for="questionnaire_{{ questionnaire.id }}_{{ option.id }}">{{ option.option_text }}</label><br>
-                    {% with options_found=True %}
-                    {% endwith %}
-                {% endif %}
-            {% endfor %}
+        {% for questionnaire in questionnaires %}
+            <div class="question-section">
+                <!-- Display questionnaire title -->
+                <h3>{{ questionnaire.title }}</h3>
 
-            {% if not options_found %}
-                {% if questionnaire.answer_type == 'time_select' %}
-                    <input type="time" name="questionnaire_{{ questionnaire.id }}" required><br>
-                {% elif questionnaire.answer_type == 'text' %}
-                    <input type="text" name="questionnaire_{{ questionnaire.id }}" required><br>
-                {% endif %}
-            {% endif %}
-        {% endwith %}
-    {% endfor %}
+                {% with options_found=False %}
+                    {% for option in options %}
+                        {% if option.questionnaire.id == questionnaire.id %}
+                            <div class="option">
+                                <input type="radio" id="questionnaire_{{ questionnaire.id }}_{{ option.id }}" name="questionnaire_{{ questionnaire.id }}" value="{{ option.option_value }}" required>
+                                <label for="questionnaire_{{ questionnaire.id }}_{{ option.id }}">{{ option.option_text }}</label>
+                            </div>
+                            {% with options_found=True %}
+                            {% endwith %}
+                        {% endif %}
+                    {% endfor %}
 
-    <button type="submit">Submit</button>
-</form>
+                    {% if not options_found %}
+                        <div class="answer-input">
+                            {% if questionnaire.answer_type == 'time_select' %}
+                                <input type="time" name="questionnaire_{{ questionnaire.id }}" required>
+                            {% elif questionnaire.answer_type == 'text' %}
+                                <input type="text" name="questionnaire_{{ questionnaire.id }}" required>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endfor %}
 
-
+        <button type="submit" class="submit-button">送信</button>
+    </form>
+</body>
+</html>

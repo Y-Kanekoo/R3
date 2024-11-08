@@ -1,0 +1,82 @@
+/* 基本スタイル */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* フォームのスタイル */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form label {
+    font-weight: bold;
+    color: #555;
+}
+
+.form input[type="text"],
+.form input[type="number"],
+.form select,
+.form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.form input[type="text"]:focus,
+.form input[type="number"]:focus,
+.form select:focus,
+.form textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* ボタンスタイル */
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}

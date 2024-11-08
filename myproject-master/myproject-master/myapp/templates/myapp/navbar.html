@@ -1,0 +1,16 @@
+<!-- myapp/templates/myapp/navbar.html -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'myapp/css/navbar.css' %}"> <!-- 外部CSSファイルをリンク -->
+<div class="navbar">
+    <a href="{% url 'myapp:home' %}">ホーム</a>
+    <a href="{% url 'myapp:profile' %}">プロフィール変更</a>
+    {% if request.user.employee.employee_type == 'admin' %}
+        <a href="{% url 'myapp:user_list' %}">アカウント編集</a>
+        <a href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
+        <a href="{% url 'myapp:questionnaire_list' %}">質問編集</a>
+    {% endif %}
+    <form method="post" action="{% url 'myapp:logout' %}">
+        {% csrf_token %}
+        <button type="submit">ログアウト</button>
+    </form>
+</div>
