@@ -1,6 +1,6 @@
 # myapp/urls.py
 from django.urls import path
-from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers,submit_answers, submit_answers, CustomLoginView, CustomLogoutView, profile, questionnaire_list, questionnaire_create, questionnaire_update, questionnaire_delete
+from .views import EmployeesList, show_employees, QuestionnairesList, show_questionnaires, Daily_reportsList, show_daily_reports, Daily_report_answersList, show_report_answers,submit_answers, submit_answers,  submit_answers, CustomLoginView,  CustomLogoutView,  profile, questionnaire_list, questionnaire_create, questionnaire_update, questionnaire_delete, questionnaire_list, questionnaire_create, questionnaire_update, questionnaire_delete,user_list,update_user
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -28,4 +28,6 @@ urlpatterns = [
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path("profile/", views.profile, name="profile"),
     path("signup/", views.SignUpView.as_view(), name="signup"),
+    path('user-list/', user_list, name='user_list'),
+    path('update-user/<int:user_id>/', update_user, name='update_user'),
 ]

@@ -1,0 +1,32 @@
+<table>
+    <thead>
+        <tr>
+            <th>ユーザー名</th>
+            <th>メールアドレス</th>
+            <th>管理者</th>
+            <th>保存</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in user_data %}
+            <tr>
+                <form method="POST" action="{% url 'myapp:update_user' data.user.id %}">
+                    {% csrf_token %}
+                    <td>{{ data.user.username }}</td>
+                    <td>{{ data.user.email }}</td>
+                    <td>
+                        <label for="is_superuser_{{ data.user.id }}">管理者</label>
+                        <input id="is_superuser_{{ data.user.id }}" type="checkbox" name="is_superuser" {% if data.user.is_superuser or data.employee.employee_type == 'admin' %}checked{% endif %}>
+                    </td>
+                    <td>
+                        <button type="submit">保存</button>
+                    </td>
+                </form>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">ユーザーが存在しません。</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

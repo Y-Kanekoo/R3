@@ -36,7 +36,8 @@
     <a href="{% url 'myapp:profile' %}">プロフィール</a>
     {% if request.user.employee.employee_type == 'admin' %}
         <!-- Buttons visible only to staff/admin users -->
-        <a href="{% url 'myapp:employee_management' %}">ユーザー管理</a>
+        <a href="{% url 'myapp:user_list'  %}">編集</a>
+
         <a href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
     {% endif %}
  

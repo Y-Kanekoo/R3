@@ -1,0 +1,18 @@
+<form method="POST" action="{% url 'update_user' user.id %}">
+    {% csrf_token %}
+    <label for="employee_type">役職</label>
+    <label for="employee_type_admin">
+        <input type="radio" id="employee_type_admin" name="employee_type" value="admin" {% if employee.employee_type == 'admin' %}checked{% endif %}> 管理者
+    </label>
+    <label for="employee_type_general">
+        <input type="radio" id="employee_type_general" name="employee_type" value="general" {% if employee.employee_type == 'general' %}checked{% endif %}> 一般ユーザー
+    </label>
+
+    <label for="is_staff">スタッフ</label>
+    <input id="is_staff" type="checkbox" name="is_staff" {% if employee.is_staff %}checked{% endif %}>
+
+    <label for="is_superuser">管理者</label>
+    <input id="is_superuser" type="checkbox" name="is_superuser"  {% if data.employee.is_superuser or data.employee.employee_type == 'admin' %}checked{% endif %}>
+
+    <button type="submit">保存</button>
+</form>
