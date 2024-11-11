@@ -1,11 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Answers</title>
 </head>
+
 <body>
+    <h1>回答一覧</h1>
+
+    <!-- CSVエクスポート用の期間指定フォーム -->
+    <section>
+        <h2>CSVエクスポート</h2>
+        <form method="get" action="{% url 'myapp:export_csv' %}">
+            <label for="start_date">開始日:</label>
+            <input type="date" id="start_date" name="start_date" required>
+
+            <label for="end_date">終了日:</label>
+            <input type="date" id="end_date" name="end_date" required>
+
+            <button type="submit">CSVエクスポート</button>
+        </form>
+    </section>
+
+    <!-- 回答一覧テーブル -->
     <table border="1">
         <thead>
             <tr>
@@ -13,22 +32,23 @@
                 <th>回答</th>
                 <th>作成日時</th>
                 <th>更新日時</th>
-                <th>日報id</th>
-                <th>アンケートid</th>
+                <th>日報ID</th>
+                <th>アンケートID</th>
             </tr>
         </thead>
         <tbody>
-            {% for Answer in answers %}
+            {% for answer in answers %}
             <tr>
-                <td>{{ Answer.id }}</td>
-                <td>{{ Answer.answer }}</td>
-                <td>{{ Answer.created_at }}</td>
-                <td>{{ Answer.updated_at }}</td>
-                <td>{{ Answer.daily_report }}</td>
-                <td>{{ Answer.questionnaire }}</td>
+                <td>{{ answer.id }}</td>
+                <td>{{ answer.answer }}</td>
+                <td>{{ answer.created_at }}</td>
+                <td>{{ answer.updated_at }}</td>
+                <td>{{ answer.daily_report }}</td>
+                <td>{{ answer.questionnaire }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </body>
+
 </html>
