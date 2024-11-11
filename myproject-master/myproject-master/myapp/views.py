@@ -1,10 +1,10 @@
 # myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Employee
+from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, QuestionnaireThreshold, QuestionnaireOption
+from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.contrib.auth import login, get_user_model,authenticate
-from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, QuestionnaireThreshold, QuestionnaireOption
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
@@ -20,6 +20,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
 from rest_framework import generics  # 外部ライブラリのインポート
 from myapp.signup import SignUpForm  # 最後にアプリ関連のインポートを行う
+from datetime import datetime
 
 
 class EmployeesList(generics.ListAPIView):
@@ -291,3 +292,57 @@ def update_user(request, user_id):
         return redirect('myapp:user_list')  # 更新後にユーザーリストにリダイレクト
 
     return render(request, 'myapp:update_user.html', {'user': user, 'employee': employee})
+
+#CSV 2024/11/11
+def export_csv(request):
+    # リクエストから期間を取得
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # 日付のバリデーション
+    try:
+        # 日付形式を確認し、日付オブジェクトに変換
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+        # 開始日が終了日より後である場合のエラー処理
+        if start_date > end_date:
+            messages.error(request, "開始日は終了日より前の日付を指定してください。")
+            return redirect('myapp:show_daily_reports')
+
+    except (ValueError, TypeError):
+        messages.error(request, "日付の形式が正しくありません。")
+        return redirect('myapp:show_daily_reports')
+
+    # 指定期間内の回答データを取得
+    answers = DailyReportAnswer.objects.filter(
+        daily_report__report_datetime__range=[start_date, end_date]
+    ).select_related('daily_report', 'questionnaire')
+
+    # 該当データが存在しない場合のエラーメッセージ
+    if not answers.exists():
+        messages.warning(request, "指定された期間内のデータが見つかりませんでした。")
+        return redirect('myapp:show_daily_reports')
+
+    # CSVレスポンスを作成
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="answers_{start_date.date()}_to_{end_date.date()}.csv"'
+
+    # CSVライターを初期化
+    writer = csv.writer(response)
+    # ヘッダー行の書き込み
+    writer.writerow(['ID', '従業員', '質問タイトル', '回答', 'レポート日時', '作成日時', '更新日時'])
+
+    # データ行の書き込み
+    for answer in answers:
+        writer.writerow([
+            answer.id,
+            answer.daily_report.employee.name,
+            answer.questionnaire.title,
+            answer.answer,
+            answer.daily_report.report_datetime,
+            answer.created_at,
+            answer.updated_at,
+        ])
+
+    return response
