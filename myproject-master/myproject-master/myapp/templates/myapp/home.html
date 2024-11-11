@@ -4,49 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホームページ</title>
-    <style>
-        /* Basic styling for the navbar */
-        .navbar {
-            display: flex;
-            background-color: #333;
-            padding: 10px;
-        }
-        .navbar a, .navbar form button {
-            color: white;
-            background-color: #333;
-            border: none;
-            padding: 10px 20px;
-            text-decoration: none;
-            cursor: pointer;
-            margin-right: 10px;
-            text-align: center;
-        }
-        .navbar a:hover, .navbar form button:hover {
-            background-color: #555;
-        }
-        .navbar form {
-            margin-left: auto;
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/home.css' %}">
 </head>
 <body>
  
-<div class="navbar">
-    <a href="{% url 'myapp:home' %}">ホーム</a>
-    <a href="{% url 'myapp:profile' %}">プロフィール</a>
-    {% if request.user.employee.employee_type == 'admin' %}
-        <!-- Buttons visible only to staff/admin users -->
-        <a href="{% url 'myapp:employee_management' %}">ユーザー管理</a>
-        <a href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
-    {% endif %}
- 
-    <form method="post" action="{% url 'myapp:logout' %}">
-        {% csrf_token %}
-        <button type="submit">ログアウト</button>
-    </form>
-</div>
+    {% include 'myapp/navbar.html' %}
  
 <h1>ようこそ、{{ request.user.username }}さん！</h1>
+<a href="{% url 'myapp:submit_answers' %} "class="btn btn-primary">朝日報</a>
  
 </body>
 </html>

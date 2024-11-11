@@ -4,30 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>プロフィール編集</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/profile.css' %}">
 </head>
 <body>
-    <h1>プロフィール編集</h1>
-    <p>ユーザーID: {{ user.id }}</p>  <!-- 主キーの表示 -->
+    <!-- Include navbar or other common elements here -->
+    {% include 'myapp/navbar.html' %}
 
-    <form method="post" action="{% url 'myapp:profile' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div>
-            <label for="name">名前</label>
-            <input value="{{ request.Employee.name }}" name="name" id="name" type="text" required="required" />
-        </div>
+    <div class="profile-container">
+        <h1>プロフィール編集</h1>
+        <p>ユーザーID: {{ user.id }}</p>  <!-- Display User's primary key -->
 
-        <div>
-            <label for="email">メールアドレス</label>
-            <input value="{{ request.Employee.email }}" name="email" id="email" type="email" />
-        </div>
-        <div>
-            <button type="submit">保存</button>
-        </div>
-    </form>
+        <!-- Form for editing profile information -->
+        <form method="post" action="{% url 'myapp:profile' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="name">名前</label>
+                <input value="{{ request.user.employee.name }}" name="name" id="name" type="text" required placeholder="名前を入力" />
+            </div>
 
-    <form method="POST" action="{% url 'myapp:login' %}">
-        {% csrf_token %}
-        <button type="submit">ログアウト</button>
-    </form>
+            <div class="form-group">
+                <label for="email">メールアドレス</label>
+                <input value="{{ request.user.employee.email }}" name="email" id="email" type="email" placeholder="メールアドレスを入力" />
+            </div>
+
+            <button type="submit" class="submit-button">保存</button>
+        </form>
+    </div>
 </body>
 </html>

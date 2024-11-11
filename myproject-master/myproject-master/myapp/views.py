@@ -8,6 +8,7 @@ from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Que
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from .forms import EmployeeForm, QuestionnaireForm
 from django.db.models import Q
@@ -255,3 +256,38 @@ def questionnaire_delete(request, pk):
         messages.error(request, "指定されたアンケートは存在しません。")  # エラーメッセージ
     # 一覧画面にリダイレクト
     return redirect('myapp:questionnaire_list')
+
+
+
+# ユーザーリストの表示と権限の更新を行うビュー
+@user_passes_test(lambda u: u.is_authenticated and u.employee_type == 'admin')
+def user_list(request):
+    user_data = Employee.objects.select_related('user').all()  # EmployeeとUserを関連付けて取得
+    return render(request, 'myapp/user_list.html', {'user_data': user_data})
+@user_passes_test(lambda u: u.is_authenticated and u.employee_type == 'admin')
+def update_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    employee = get_object_or_404(Employee, user=user)
+
+    if request.method == 'POST':
+        # POSTデータから  `is_superuser` の値を取得
+        is_superuser = request.POST.get('is_superuser') == 'on'
+        is_staff = request.POST.get('is_staff') == 'on'
+
+        # UserとEmployeeの`is_staff`と`is_superuser`を更新
+        user.is_superuser = is_superuser
+        user.is_staff = is_superuser  # is_superuserがTrueならis_staffもTrueに
+        user.employee_type = 'admin' if is_superuser else 'general'  # is_superuserがTrueならemployee_typeをadminに
+        user.save()
+
+        employee.is_superuser = is_superuser
+        employee.is_staff = is_superuser  # is_superuserがTrueならis_staffもTrueに
+        employee.employee_type = 'admin' if is_superuser else 'general'  # is_superuserがTrueならemployee_typeをadminに
+        employee.save()
+
+        user = get_object_or_404(User, id=user_id)
+        employee = get_object_or_404(Employee, user=user)
+
+        return redirect('myapp:user_list')  # 更新後にユーザーリストにリダイレクト
+
+    return render(request, 'myapp:update_user.html', {'user': user, 'employee': employee})

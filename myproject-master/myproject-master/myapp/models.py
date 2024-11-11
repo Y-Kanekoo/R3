@@ -31,6 +31,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         choices=[('admin', 'Admin'), ('general', 'General')],
         default='general'
     )
+    is_staff = models.BooleanField(default= False)
+    is_superuser = models.BooleanField(default=False)  # 管理者権限
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -40,6 +42,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["email"]
 
     def save(self, *args, **kwargs):
+        # employee_type が 'admin' の場合は is_staff を True に設定
+        if self.employee_type == 'admin':
+            self.is_staff = True
+            self.is_superuser = True
+        else:
+            self.is_staff = False
+            
         # Userモデルのデータを保存する前にEmployeeモデルの共通データを保存
         super().save(*args, **kwargs)
 
