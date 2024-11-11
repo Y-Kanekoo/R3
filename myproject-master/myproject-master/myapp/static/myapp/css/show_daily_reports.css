@@ -1,0 +1,46 @@
+/* グループ化されたチェックボックスの間隔を狭く */
+.checkbox-group {
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* 各ラベルを横並びに表示 */
+.checkbox-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.checkbox-group input {
+  margin-right: 5px;
+}
+
+/* 適用ボタン */
+button {
+  padding: 5px 10px;
+  margin-top: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table, th, td {
+  border: 1px solid black;
+}
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+.threshold-exceeded {
+  background-color: #ffcccc; /* 閾値超過時にセルを赤っぽくする */
+}
