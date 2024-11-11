@@ -15,16 +15,16 @@ def run():
 
 # Userデータ
     users = [
-        {"username": "johndoe", "password": "t3stpass1", "email": "johndoe@example.com","employee_type":"admin"},
-        {"username": "janesmith", "password": "t3stpass2", "email": "janesmith@example.com"},
-        {"username": "michaeljohnson", "password": "t3stpass3", "email": "michaeljohnson@example.com"},
+        {"username": "田中一郎", "password": "t3stpass1", "email": "johndoe@example.com","employee_type":"admin"},
+        {"username": "小山和美", "password": "t3stpass2", "email": "janesmith@example.com"},
+        {"username": "山本翔太", "password": "t3stpass3", "email": "michaeljohnson@example.com"},
     ]
 
 # Employeeデータ
     employees = [
-        {"name": "John Doe", "employee_type": "admin"},
-        {"name": "Jane Smith", "employee_type": "general"},
-        {"name": "Michael Johnson", "employee_type": "general"},
+        {"name": "田中一郎", "employee_type": "admin"},
+        {"name": "小山和美", "employee_type": "general"},
+        {"name": "山本翔太", "employee_type": "general"},
     ]
 
 # ユーザーと従業員を組み合わせて処理
@@ -133,6 +133,52 @@ def run():
         {"daily_report_id": 1, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。"},  # 伝えたいこと（記述）
         {"daily_report_id": 1, "questionnaire_id": 21, "answer": "深呼吸とストレッチを行った。"},  # 回復ルーティン（記述）
         {"daily_report_id": 1, "questionnaire_id": 22, "answer": 3},  # 自身の余裕度（選択）
+        
+        {"daily_report_id": 2, "questionnaire_id": 1, "answer": "23:00"},  # 就寝時間（時間選択）
+        {"daily_report_id": 2, "questionnaire_id": 2, "answer": "07:30"},  # 起床時間（時間選択）
+        {"daily_report_id": 2, "questionnaire_id": 3, "answer": 2},  # 睡眠の質（選択）
+        {"daily_report_id": 2, "questionnaire_id": 4, "answer": 1},  # 今朝の朝食を食べたか（選択）
+        {"daily_report_id": 2, "questionnaire_id": 5, "answer": "07:45"},  # 薬を飲んだ時間（時間選択）
+        {"daily_report_id": 2, "questionnaire_id": 6, "answer": 3},  # 自分の状態（選択）
+        {"daily_report_id": 2, "questionnaire_id": 7, "answer": "体調はやや良くなったが、少し眠い。"},  # 自分の状態の詳細（記述）
+        {"daily_report_id": 2, "questionnaire_id": 8, "answer": 2},  # 不安感のレベル（選択）
+        {"daily_report_id": 2, "questionnaire_id": 9, "answer": 3},  # 今の感情（選択）
+        {"daily_report_id": 2, "questionnaire_id": 10, "answer": 2},  # コミュニケーションの意欲（選択）
+        {"daily_report_id": 2, "questionnaire_id": 11, "answer": 4},  # 体の調子（選択）
+        {"daily_report_id": 2, "questionnaire_id": 12, "answer": 4},  # 集中力の調子（選択）
+        {"daily_report_id": 2, "questionnaire_id": 13, "answer": 3},  # 体の不調（選択）
+        {"daily_report_id": 2, "questionnaire_id": 14, "answer": 2},  # 自己肯定感（選択）
+        {"daily_report_id": 2, "questionnaire_id": 15, "answer": 2},  # 誰かに頼っても良いか（選択）
+        {"daily_report_id": 2, "questionnaire_id": 16, "answer": 3},  # 自分が必要とされているか（選択）
+        {"daily_report_id": 2, "questionnaire_id": 17, "answer": 2},  # その他の気になる症状（選択）
+        {"daily_report_id": 2, "questionnaire_id": 18, "answer": 1},  # 仕事に対して配慮が必要か（選択）
+        {"daily_report_id": 2, "questionnaire_id": 19, "answer": "もう少し早く仕事を終わらせる必要があります。"},  # 仕事に対して配慮が必要かの詳細（記述）
+        {"daily_report_id": 2, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。"},  # 伝えたいこと（記述）
+        {"daily_report_id": 2, "questionnaire_id": 21, "answer": "軽い運動をしました。"},  # 回復ルーティン（記述）
+        {"daily_report_id": 2, "questionnaire_id": 22, "answer": 2},  # 自身の余裕度（選択）
+
+        {"daily_report_id": 3, "questionnaire_id": 1, "answer": "21:30"},  # 就寝時間（時間選択）
+        {"daily_report_id": 3, "questionnaire_id": 2, "answer": "06:45"},  # 起床時間（時間選択）
+        {"daily_report_id": 3, "questionnaire_id": 3, "answer": 3},  # 睡眠の質（選択）
+        {"daily_report_id": 3, "questionnaire_id": 4, "answer": 1},  # 今朝の朝食を食べたか（選択）
+        {"daily_report_id": 3, "questionnaire_id": 5, "answer": "08:00"},  # 薬を飲んだ時間（時間選択）
+        {"daily_report_id": 3, "questionnaire_id": 6, "answer": 2},  # 自分の状態（選択）
+        {"daily_report_id": 3, "questionnaire_id": 7, "answer": "昨日より少し疲れが残っている。"},  # 自分の状態の詳細（記述）
+        {"daily_report_id": 3, "questionnaire_id": 8, "answer": 1},  # 不安感のレベル（選択）
+        {"daily_report_id": 3, "questionnaire_id": 9, "answer": 2},  # 今の感情（選択）
+        {"daily_report_id": 3, "questionnaire_id": 10, "answer": 3},  # コミュニケーションの意欲（選択）
+        {"daily_report_id": 3, "questionnaire_id": 11, "answer": 2},  # 体の調子（選択）
+        {"daily_report_id": 3, "questionnaire_id": 12, "answer": 2},  # 集中力の調子（選択）
+        {"daily_report_id": 3, "questionnaire_id": 13, "answer": 1},  # 体の不調（選択）
+        {"daily_report_id": 3, "questionnaire_id": 14, "answer": 4},  # 自己肯定感（選択）
+        {"daily_report_id": 3, "questionnaire_id": 15, "answer": 3},  # 誰かに頼っても良いか（選択）
+        {"daily_report_id": 3, "questionnaire_id": 16, "answer": 1},  # 自分が必要とされているか（選択）
+        {"daily_report_id": 3, "questionnaire_id": 17, "answer": 4},  # その他の気になる症状（選択）
+        {"daily_report_id": 3, "questionnaire_id": 18, "answer": 3},  # 仕事に対して配慮が必要か（選択）
+        {"daily_report_id": 3, "questionnaire_id": 19, "answer": "少し時間調整をお願いしたいです。"},  # 仕事に対して配慮が必要かの詳細（記述）
+        {"daily_report_id": 3, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。"},  # 伝えたいこと（記述）
+        {"daily_report_id": 3, "questionnaire_id": 21, "answer": "リラックスする時間を取りました。"},  # 回復ルーティン（記述）
+        {"daily_report_id": 3, "questionnaire_id": 22, "answer": 1}  # 自身の余裕度（選択）
     ]
 
     for answer_data in answers:
@@ -204,6 +250,8 @@ def run():
         {"questionnaire_id": 22, "option_text": "普通", "option_value": 3},
         {"questionnaire_id": 22, "option_text": "少し余裕がない", "option_value": 4},
         {"questionnaire_id": 22, "option_text": "余裕がない", "option_value": 5},
+
+        
     ]
 
     for option_data in options:
