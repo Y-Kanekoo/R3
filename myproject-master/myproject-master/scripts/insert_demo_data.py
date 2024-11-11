@@ -15,16 +15,16 @@ def run():
 
 # Userデータ
     users = [
-        {"username": "johndoe", "password": "t3stpass1", "email": "johndoe@example.com","employee_type":"admin"},
-        {"username": "janesmith", "password": "t3stpass2", "email": "janesmith@example.com"},
-        {"username": "michaeljohnson", "password": "t3stpass3", "email": "michaeljohnson@example.com"},
+        {"username": "田中一郎", "password": "t3stpass1", "email": "johndoe@example.com","employee_type":"admin"},
+        {"username": "小山和美", "password": "t3stpass2", "email": "janesmith@example.com"},
+        {"username": "山本翔太", "password": "t3stpass3", "email": "michaeljohnson@example.com"},
     ]
 
 # Employeeデータ
     employees = [
-        {"name": "John Doe", "employee_type": "admin"},
-        {"name": "Jane Smith", "employee_type": "general"},
-        {"name": "Michael Johnson", "employee_type": "general"},
+        {"name": "田中一郎", "employee_type": "admin"},
+        {"name": "小山和美", "employee_type": "general"},
+        {"name": "山本翔太", "employee_type": "general"},
     ]
 
 # ユーザーと従業員を組み合わせて処理
