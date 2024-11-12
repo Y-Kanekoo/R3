@@ -6,13 +6,18 @@
     <title>ホームページ</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'myapp/css/home.css' %}">
+
 </head>
 <body>
- 
+
+    <!-- Navbar -->
     {% include 'myapp/navbar.html' %}
- 
-<h1>ようこそ、{{ request.user.username }}さん！</h1>
-<a href="{% url 'myapp:submit_answers' %} "class="btn btn-primary">朝日報</a>
- 
+    
+    <div class="container mt-5">
+        <h1 class="text-center">ようこそ、{{ request.user.username }}さん！</h1>
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'myapp:submit_answers' %}" class="btn btn-primary">朝日報</a>
+        </div>
+    </div>
 </body>
 </html>

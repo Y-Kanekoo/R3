@@ -8,29 +8,32 @@
     <link rel="stylesheet" href="{% static 'myapp/css/profile.css' %}">
 </head>
 <body>
-    <!-- Include navbar or other common elements here -->
+    <!-- ナビゲーションバーの読み込み -->
     {% include 'myapp/navbar.html' %}
 
-    <div class="profile-container">
-        <h1>プロフィール編集</h1>
-        <p>ユーザーID: {{ user.id }}</p>  <!-- Display User's primary key -->
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+        <div class="profile-container bg-white p-4 rounded shadow">
+            <h1 class="text-center mb-4">プロフィール編集</h1>
+            <p class="text-center">ユーザーID: {{ user.id }}</p> <!-- ユーザーのIDを表示 -->
 
-        <!-- Form for editing profile information -->
-        <form method="post" action="{% url 'myapp:profile' %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="name">名前</label>
-                <input value="{{ request.user.employee.name }}" name="name" id="name" type="text" required placeholder="名前を入力" />
-            </div>
+            <!-- プロフィール情報編集フォーム -->
+            <form method="post" action="{% url 'myapp:profile' %}" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <div class="form-group">
-                <label for="email">メールアドレス</label>
-                <input value="{{ request.user.employee.email }}" name="email" id="email" type="email" placeholder="メールアドレスを入力" />
-            </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">名前</label>
+                    <input value="{{ request.user.employee.name }}" name="name" id="name" type="text" class="form-control" required placeholder="名前を入力">
+                </div>
 
-            <button type="submit" class="submit-button">保存</button>
-        </form>
+                <div class="mb-3">
+                    <label for="email" class="form-label">メールアドレス</label>
+                    <input value="{{ request.user.employee.email }}" name="email" id="email" type="email" class="form-control" placeholder="メールアドレスを入力">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">保存</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
+

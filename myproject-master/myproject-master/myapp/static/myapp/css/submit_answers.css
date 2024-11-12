@@ -1,17 +1,21 @@
-/* submit_answers.css */
-
 body {
     font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
 }
 
 .container {
     max-width: 600px;
 }
 
-h5 {
-    font-size: 1.25rem;
-}
-
 .bg-light {
     background-color: #f7f7f7 !important;
+}
+
+.question-section h5 {
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.form-navigation .btn {
+    font-size: 1rem;
 }

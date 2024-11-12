@@ -1,55 +1,59 @@
 
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>アンケート一覧</title>
-    <!-- 外部CSSファイルをリンク -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'myapp/css/questionnaire_list.css' %}">
 </head>
 <body>
 
-<div class="container">
     {% include 'myapp/navbar.html' %}
-    <h2>アンケート一覧</h2>
-    <div class="create-link">
+
+<div class="container my-5">
+
+    
+    <h2 class="text-center mb-4">アンケート一覧</h2>
+    
+    <div class="text-end mb-3">
         <a href="{% url 'myapp:questionnaire_create' %}" class="btn btn-primary">新規アンケート作成</a>
     </div>
 
     {% if questionnaires %}
-        <table>
-            <thead>
-                <tr>
-                    <th>タイトル</th>
-                    <th>タイプ</th>
-                    <th>回答形式</th>
-                    <th>作成日</th>
-                    <th>更新日</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for questionnaire in questionnaires %}
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-primary">
                     <tr>
-                        <td>{{ questionnaire.title }}</td>
-                        <td>{{ questionnaire.type }}</td>
-                        <td>{{ questionnaire.answer_type }}</td>
-                        <td>{{ questionnaire.created_at|date:"Y-m-d" }}</td>
-                        <td>{{ questionnaire.updated_at|date:"Y-m-d" }}</td>
-                        <td class="actions">
-                            <a href="{% url 'myapp:questionnaire_update' questionnaire.pk %}">編集</a> |
-                            <a href="{% url 'myapp:questionnaire_delete' questionnaire.pk %}" 
-                               onclick="return confirm('本当にこのアンケートを削除しますか？');">削除</a>
-                        </td>
+                        <th>タイトル</th>
+                        <th>タイプ</th>
+                        <th>回答形式</th>
+                        <th>作成日</th>
+                        <th>更新日</th>
+                        <th>操作</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for questionnaire in questionnaires %}
+                        <tr>
+                            <td>{{ questionnaire.title }}</td>
+                            <td>{{ questionnaire.type }}</td>
+                            <td>{{ questionnaire.answer_type }}</td>
+                            <td>{{ questionnaire.created_at|date:"Y-m-d" }}</td>
+                            <td>{{ questionnaire.updated_at|date:"Y-m-d" }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'myapp:questionnaire_update' questionnaire.pk %}" class="btn btn-link">編集</a>
+                                <a href="{% url 'myapp:questionnaire_delete' questionnaire.pk %}" class="btn btn-link text-danger"
+                                   onclick="return confirm('本当にこのアンケートを削除しますか？');">削除</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p class="empty-message">現在、アンケートが存在しません。</p>
+        <p class="text-center text-muted">現在、アンケートが存在しません。</p>
     {% endif %}
 </div>
 

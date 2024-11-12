@@ -1,27 +1,6 @@
-/* Basic styling for the navbar */
-.navbar {
-    display: flex;
-    background-color: #333;
-    padding: 10px;
-}
-
-.navbar a,
-.navbar form button {
-    color: white;
-    background-color: #333;
-    border: none;
-    padding: 10px 20px;
-    text-decoration: none;
-    cursor: pointer;
+/* Add any additional styling if needed */
+.navbar .nav-link, .navbar .btn {
     margin-right: 10px;
-    text-align: center;
 }
 
-.navbar a:hover,
-.navbar form button:hover {
-    background-color: #555;
-}
 
-.navbar form {
-    margin-left: auto;
-}

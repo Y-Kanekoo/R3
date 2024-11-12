@@ -1,16 +1,61 @@
-<!-- myapp/templates/myapp/navbar.html -->
-{% load static %}
-<link rel="stylesheet" href="{% static 'myapp/css/navbar.css' %}"> <!-- 外部CSSファイルをリンク -->
-<div class="navbar">
-    <a href="{% url 'myapp:home' %}">ホーム</a>
-    <a href="{% url 'myapp:profile' %}">プロフィール変更</a>
-    {% if request.user.employee.employee_type == 'admin' %}
-        <a href="{% url 'myapp:user_list' %}">アカウント編集</a>
-        <a href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
-        <a href="{% url 'myapp:questionnaire_list' %}">質問編集</a>
-    {% endif %}
-    <form method="post" action="{% url 'myapp:logout' %}">
-        {% csrf_token %}
-        <button type="submit">ログアウト</button>
-    </form>
-</div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ナビゲーションバー</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/navbar.css' %}"> <!-- 必要に応じて外部CSS -->
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'myapp:home' %}">ホーム</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'myapp:profile' %}">プロフィール変更</a>
+                    </li>
+                    {% if request.user.employee.employee_type == 'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'myapp:user_list' %}">アカウント編集</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'myapp:show_daily_reports' %}">回答データ一覧</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'myapp:questionnaire_list' %}">質問編集</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <form class="d-flex" method="post" action="{% url 'myapp:logout' %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-light" type="submit">ログアウト</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- その他のページ内容 -->
+
+    <!-- BootstrapのJavaScriptの読み込み -->
+    {% bootstrap_javascript %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

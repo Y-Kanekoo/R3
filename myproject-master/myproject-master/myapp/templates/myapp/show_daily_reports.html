@@ -7,25 +7,20 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'myapp/css/show_daily_reports.css' %}" />
     <script>
-      // ページ読み込み時に選択状態を復元
       window.onload = function() {
         restoreColumnVisibility();
       }
 
-      // チェックボックスの状態を保存
       function saveColumnVisibility() {
         const checkboxes = document.querySelectorAll('.column-checkbox');
         const visibilityState = [];
         checkboxes.forEach(checkbox => {
           visibilityState.push(checkbox.checked);
         });
-
-        // セッションストレージに保存
         sessionStorage.setItem('columnVisibility', JSON.stringify(visibilityState));
-        toggleColumnVisibility();  // 表示更新
+        toggleColumnVisibility();
       }
 
-      // セッションストレージから選択状態を復元
       function restoreColumnVisibility() {
         const savedState = sessionStorage.getItem('columnVisibility');
         if (savedState) {
@@ -35,29 +30,26 @@
           checkboxes.forEach((checkbox, index) => {
             checkbox.checked = visibilityState[index];
           });
-          toggleColumnVisibility();  // 表示更新
+          toggleColumnVisibility();
         }
       }
 
-      // チェックボックスに基づいて列の表示/非表示を切り替える
       function toggleColumnVisibility() {
         const checkboxes = document.querySelectorAll('.column-checkbox');
         const tableHeader = document.querySelector('thead tr');
         const tableBody = document.querySelector('tbody');
-        const tableColumns = document.querySelectorAll('.column');
 
         checkboxes.forEach((checkbox, index) => {
-          const columnHeader = tableHeader.querySelectorAll('.column')[index];
-
+          const columnHeader = tableHeader.querySelectorAll('th')[index];
           if (checkbox.checked) {
-            columnHeader.style.display = '';  // 表示
+            columnHeader.style.display = '';
             Array.from(tableBody.rows).forEach(row => {
-              row.cells[index].style.display = '';  // 表示
+              row.cells[index].style.display = '';
             });
           } else {
-            columnHeader.style.display = 'none';  // 非表示
+            columnHeader.style.display = 'none';
             Array.from(tableBody.rows).forEach(row => {
-              row.cells[index].style.display = 'none';  // 非表示
+              row.cells[index].style.display = 'none';
             });
           }
         });
@@ -65,67 +57,70 @@
     </script>
   </head>
   <body>
-    <!-- ナビゲーションバーを挿入 -->
     {% include 'myapp/navbar.html' %}
-    
-    <header>
-      <h1>日報一覧</h1>
-    </header>
 
-    <!-- レポートテーブルの列表示設定 -->
-    <form>
-      <h2>表示するレポート列を選択</h2>
-      <div class="column-selection">
-        <div class="checkbox-group">
-          <label><input type="checkbox" class="column-checkbox" checked /> レポートID</label>
-          <label><input type="checkbox" class="column-checkbox" checked /> 従業員ID</label>
-          <label><input type="checkbox" class="column-checkbox" checked /> レポート日時</label>
-          <label><input type="checkbox" class="column-checkbox" checked /> レポートタイプ</label>
-          <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label>
-          <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label>
+    <div class="container my-5">
+      <header>
+        <h1 class="text-center">日報一覧</h1>
+      </header>
+
+      <form class="mb-4">
+        <h2>表示するレポート列を選択</h2>
+        <div class="column-selection d-flex flex-wrap gap-2">
+          <div class="checkbox-group">
+            <label><input type="checkbox" class="column-checkbox" checked /> レポートID</label>
+            <label><input type="checkbox" class="column-checkbox" checked /> 従業員ID</label>
+            <label><input type="checkbox" class="column-checkbox" checked /> レポート日時</label>
+            <label><input type="checkbox" class="column-checkbox" checked /> レポートタイプ</label>
+            <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label>
+            <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label>
+          </div>
+
+          <div class="checkbox-group">
+            {% for question in questionnaires %}
+              <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label>
+            {% endfor %}
+          </div>
         </div>
-    
-        <div class="checkbox-group">
-          {% for question in questionnaires %}
-            <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label>
-          {% endfor %}
-        </div>
+        <button type="button" class="btn btn-success" onclick="saveColumnVisibility()">適用</button>
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-primary">
+            <tr>
+              <th class="column">レポートID</th>
+              <th class="column">従業員ID</th>
+              <th class="column">レポート日時</th>
+              <th class="column">レポートタイプ</th>
+              <th class="column">作成日時</th>
+              <th class="column">更新日時</th>
+              {% for question in questionnaires %}
+                <th class="column">{{ question.title }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for report in reports %}
+              <tr>
+                <td class="column">{{ report.id }}</td>
+                <td class="column">{{ report.employee }}</td>
+                <td class="column">{{ report.report_datetime }}</td>
+                <td class="column">{{ report.report_type }}</td>
+                <td class="column">{{ report.created_at }}</td>
+                <td class="column">{{ report.updated_at }}</td>
+                {% for answer in report.answers %}
+                  <td class="column {% if answer.threshold_exceeded %}threshold-exceeded{% endif %}">
+                    {{ answer.answer }}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-      <button type="button" onclick="saveColumnVisibility()">適用</button>
-    </form>
+    </div>
 
-    <!-- レポートのテーブル -->
-    <table border="1">
-      <thead>
-        <tr>
-          <th class="column"><a href="?sort=id&direction={% if current_sort == 'id' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートID</a></th>
-          <th class="column"><a href="?sort=employee&direction={% if current_sort == 'employee' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">従業員ID</a></th>
-          <th class="column"><a href="?sort=report_datetime&direction={% if current_sort == 'report_datetime' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポート日時</a></th>
-          <th class="column"><a href="?sort=report_type&direction={% if current_sort == 'report_type' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートタイプ</a></th>
-          <th class="column"><a href="?sort=created_at&direction={% if current_sort == 'created_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">作成日時</a></th>
-          <th class="column"><a href="?sort=updated_at&direction={% if current_sort == 'updated_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">更新日時</a></th>
-          {% for question in questionnaires %}
-            <th class="column">{{ question.title }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for report in reports %}
-        <tr>
-          <td class="column">{{ report.id }}</td>
-          <td class="column">{{ report.employee }}</td>
-          <td class="column">{{ report.report_datetime }}</td>
-          <td class="column">{{ report.report_type }}</td>
-          <td class="column">{{ report.created_at }}</td>
-          <td class="column">{{ report.updated_at }}</td>
-          {% for answer in report.answers %}
-            <td class="column {% if answer.threshold_exceeded %}threshold-exceeded{% endif %}">
-              {{ answer.answer }}
-            </td>
-          {% endfor %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </body>
 </html>
+
