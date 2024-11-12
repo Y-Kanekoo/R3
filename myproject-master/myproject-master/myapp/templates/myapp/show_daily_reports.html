@@ -70,6 +70,7 @@
     
     <header>
       <h1>日報一覧</h1>
+      <a href="{% url 'myapp:export_reports_csv' %}" class="csv-download-button">CSVダウンロード</a>
     </header>
 
     <!-- レポートテーブルの列表示設定 -->
@@ -98,12 +99,13 @@
     <table border="1">
       <thead>
         <tr>
-          <th class="column"><a href="?sort=id&direction={% if current_sort == 'id' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートID</a></th>
-          <th class="column"><a href="?sort=employee&direction={% if current_sort == 'employee' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">従業員ID</a></th>
-          <th class="column"><a href="?sort=report_datetime&direction={% if current_sort == 'report_datetime' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポート日時</a></th>
-          <th class="column"><a href="?sort=report_type&direction={% if current_sort == 'report_type' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートタイプ</a></th>
-          <th class="column"><a href="?sort=created_at&direction={% if current_sort == 'created_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">作成日時</a></th>
-          <th class="column"><a href="?sort=updated_at&direction={% if current_sort == 'updated_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">更新日時</a></th>
+          <th class="column"><a>レポートID</a></th>
+          <th class="column"><a>従業員ID</a></th>
+          <th class="column"><a>レポート日時</a></th>
+          <th class="column"><a>レポートタイプ</a></th>
+          <th class="column"><a>作成日時</a></th>
+          <th class="column"><a>更新日時</a></th>
+
           {% for question in questionnaires %}
             <th class="column">{{ question.title }}</th>
           {% endfor %}
@@ -123,6 +125,7 @@
               {{ answer.answer }}
             </td>
           {% endfor %}
+          
         </tr>
         {% endfor %}
       </tbody>

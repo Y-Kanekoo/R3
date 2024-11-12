@@ -21,6 +21,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.admin.views.decorators import staff_member_required
 from rest_framework import generics  # 外部ライブラリのインポート
 from myapp.signup import SignUpForm  # 最後にアプリ関連のインポートを行う
+import csv
+from django.http import HttpResponse
 
 
 class EmployeesList(generics.ListAPIView):
@@ -65,7 +67,9 @@ def show_daily_reports(request):
     # 質問を取得
     questionnaires = Questionnaire.objects.all().order_by('id')
     # 回答を取得して質問の順にソート
-    answers = DailyReportAnswer.objects.select_related('questionnaire').order_by('questionnaire__id')
+    answers = DailyReportAnswer.objects.select_related(
+        'questionnaire').order_by('questionnaire__id')
+
     # 質問の選択肢を取得して辞書に整理
     options = QuestionnaireOption.objects.all()
     option_dict = {
@@ -98,19 +102,18 @@ def show_daily_reports(request):
                         # 数値でない場合は閾値判定をスキップ
                         pass
 
-                # # 回答を選択肢のテキストに変換
+                # 回答を選択肢のテキストに変換
                 try:
-                    ansewer_value = int(answer.answer)
-                    answer_text = option_dict.get((answer.questionnaire.id, ansewer_value), answer.answer)
+                    answer_value = int(answer.answer)
+                    answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
                 except ValueError:
                     answer_text = answer.answer
 
                 report_answers.append({
                     'question': answer.questionnaire.title,
-                    'answer': answer_text,
+                    'answer': answer_text,  # テキストに変換された選択肢
                     'threshold_exceeded': threshold_exceeded  # 閾値超過のフラグを追加
                 })
-        
 
         report_data.append({
             'id': report.id,
@@ -126,7 +129,6 @@ def show_daily_reports(request):
         'reports': report_data,
         'questionnaires': questionnaires, 
     })
-
 
 # 修正後のsubmit_answers関数
 
@@ -330,3 +332,44 @@ def update_user(request, user_id):
         return redirect('myapp:user_list')  # 更新後にユーザーリストにリダイレクト
 
     return render(request, 'myapp:update_user.html', {'user': user, 'employee': employee})
+
+
+def export_reports_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    
+    # ファイル名を日本語にしたい場合は下記のようにコメントを使用して指定します。
+    # response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'日報一覧.csv'
+    response['Content-Disposition'] = 'attachment; filename="daily_reports.csv"'
+
+    writer = csv.writer(response)
+
+    # CSVのヘッダー行
+    headers = ['レポートID', '従業員ID', 'レポート日時', 'レポートタイプ', '作成日時', '更新日時']
+    for question in Questionnaire.objects.all():
+        headers.append(question.title)
+    writer.writerow(headers)
+
+    # CSVのデータ行
+    for report in DailyReport.objects.select_related('employee'):
+        row = [
+            report.id,
+            report.employee.name,
+            report.report_datetime,
+            report.report_type,
+            report.created_at,
+            report.updated_at
+        ]
+
+        # 各質問の回答を取得
+        for question in Questionnaire.objects.all():
+            answer = DailyReportAnswer.objects.filter(
+                daily_report=report, questionnaire=question
+            ).first()
+            answer_text = answer.answer if answer else ""
+            row.append(answer_text)
+
+        writer.writerow(row)
+
+    # UTF-8 エンコーディングを使用（ファイルが壊れることなく保存されます）
+    response.write('\ufeff'.encode('utf8'))
+    return response
