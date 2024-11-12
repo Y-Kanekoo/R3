@@ -8,47 +8,61 @@
     <link rel="stylesheet" href="{% static 'myapp/css/submit_answers.css' %}">
 </head>
 <body>
-
     <form method="post">
         {% csrf_token %}
-        
-        <!-- Employee ID field with label -->
-        <div class="form-group">
-            <label for="employee_id">従業員ID:</label>
-            <input type="text" id="employee_id" name="employee_id" required>
+
+        <!-- ログイン中の従業員の名前を表示 -->
+        <div class="employee-info">
+            <p>従業員名: {{ employee_name }}</p>
         </div>
 
+        {% if page == 1 %}
+            <!-- 最初のページのみ従業員IDの入力欄を表示 -->
+            <div class="form-group">
+                <label for="employee_id">従業員ID:</label>
+                <input type="text" id="employee_id" name="employee_id" value="{{ employee_id }}" required readonly>
+            </div>
+        {% endif %}
+
+        <!-- 各質問を表示 -->
         {% for questionnaire in questionnaires %}
             <div class="question-section">
-                <!-- Display questionnaire title -->
                 <h3>{{ questionnaire.title }}</h3>
 
-                {% with options_found=False %}
-                    {% for option in options %}
-                        {% if option.questionnaire.id == questionnaire.id %}
-                            <div class="option">
-                                <input type="radio" id="questionnaire_{{ questionnaire.id }}_{{ option.id }}" name="questionnaire_{{ questionnaire.id }}" value="{{ option.option_value }}" required>
-                                <label for="questionnaire_{{ questionnaire.id }}_{{ option.id }}">{{ option.option_text }}</label>
-                            </div>
-                            {% with options_found=True %}
-                            {% endwith %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if not options_found %}
-                        <div class="answer-input">
-                            {% if questionnaire.answer_type == 'time_select' %}
-                                <input type="time" name="questionnaire_{{ questionnaire.id }}" required>
-                            {% elif questionnaire.answer_type == 'text' %}
-                                <input type="text" name="questionnaire_{{ questionnaire.id }}" required>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
+                {% if questionnaire.answer_type == 'time_select' %}
+                <!-- 時間選択フィールド -->
+                    <div class="answer-input">
+                        <input type="time" name="questionnaire_{{ questionnaire.id }}" value="{{ answers.questionnaire.id|default:'' }}" />
+                    </div>
+                {% elif questionnaire.answer_type == 'text' %}
+                <!-- テキストフィールド -->
+                    <div class="answer-input">
+                        <input type="text" name="questionnaire_{{ questionnaire.id }}" value="{{ answers.questionnaire.id|default:'' }}" />
+                    </div>
+                {% else %}
+    <!-- ラジオボタン選択肢 -->
+                {% for option in options %}
+                 {% if option.questionnaire.id == questionnaire.id %}
+                    <div class="option">
+                        <input type="radio" id="questionnaire_{{ questionnaire.id }}_{{ option.id }}" name="questionnaire_{{ questionnaire.id }}" value="{{ option.option_value }}" required>
+                        <label for="questionnaire_{{ questionnaire.id }}_{{ option.id }}">{{ option.option_text }}</label>
+                    </div>
+                {% endif %}
+             {% endfor %}
+            {% endif %}
+            
             </div>
         {% endfor %}
 
-        <button type="submit" class="submit-button">送信</button>
+        <!-- ページ遷移ボタン -->
+        <div class="form-navigation">
+            <input type="hidden" name="page" value="{{ page }}">
+            {% if page < total_pages %}
+                <button type="submit" name="next" class="next-button">次へ</button>
+            {% else %}
+                <button type="submit" name="submit" class="submit-button">送信</button>
+            {% endif %}
+        </div>
     </form>
 </body>
 </html>

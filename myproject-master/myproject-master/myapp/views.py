@@ -8,7 +8,8 @@ from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Que
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
-from django.contrib.auth.decorators import user_passes_test
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import user_passes_test,login_required
 from django.contrib import messages
 from .forms import EmployeeForm, QuestionnaireForm
 from django.db.models import Q
@@ -128,46 +129,84 @@ def show_daily_reports(request):
 
 
 # 修正後のsubmit_answers関数
+
+@login_required
 def submit_answers(request):
     if request.method == 'POST':
-        # フォームから送信されたemployee_idを取得し、該当する社員を取得
-        employee_id = request.POST.get('employee_id')
-        employee = get_object_or_404(Employee, id=employee_id)
+        # 現在のページ番号を取得
+        page = int(request.POST.get('page', 1))
 
-        # レポートタイプを指定（ここでは仮に'morning'）
-        report_type = 'morning'
+        # 最初のページで従業員IDを取得して処理
+        if page == 1:
+            # ログインしているユーザーの従業員IDを取得
+            employee = request.user.employee  # ユーザーが従業員情報に関連付けられている前提
+            employee_id = employee.id
 
-        # DailyReportを作成
-        daily_report = DailyReport.objects.create(
-            employee=employee,
-            report_datetime=timezone.now(),
-            report_type=report_type
-        )
+            # DailyReportを作成
+            report_type = 'morning'
+            daily_report = DailyReport.objects.create(
+                employee=employee,
+                report_datetime=timezone.now(),
+                report_type=report_type
+            )
 
-        # フォームからの回答を保存
-        for key in request.POST:
-            if key.startswith('questionnaire_'):  # 質問の回答のキーを確認
-                questionnaire_id = int(key.split('_')[1])  # 質問IDを取得
-                answer_value = request.POST[key]  # 回答を取得
+            # DailyReport IDをセッションに保存
+            request.session['daily_report_id'] = daily_report.id
+        else:
+            # セッションからレポートIDを取得
+            daily_report_id = request.session.get('daily_report_id')
+            daily_report = get_object_or_404(DailyReport, id=daily_report_id)
 
-                # DailyReportAnswerを作成 (threshold_valueを使用せずに)
+        # 回答の保存
+        for key, value in request.POST.items():
+            if key.startswith('questionnaire_'):
+                questionnaire_id = int(key.split('_')[1])
                 DailyReportAnswer.objects.create(
                     daily_report=daily_report,
                     questionnaire_id=questionnaire_id,
-                    answer=answer_value,
+                    answer=value
                 )
 
-        # 回答が保存された後、日報の表示ページにリダイレクト
-        return redirect('show_daily_reports')
+        # 次のページへ
+        if 'next' in request.POST:
+            page += 1
+        elif 'submit' in request.POST:
+            return redirect('myapp:home')  # 送信後にhomeページへリダイレクト
 
-    # GET リクエストの場合、質問と選択肢を取得
+    else:
+        page = 1  # 初期ページ
+
+    # 質問の取得とページネーション設定
     questionnaires = Questionnaire.objects.all()
+    paginator = Paginator(questionnaires, 5)  # 1ページに5問表示
+    paginated_questions = paginator.get_page(page)
+
+    # 選択肢の取得
     options = QuestionnaireOption.objects.all()
+
+    # ログインしている従業員の情報をコンテキストに追加
+    employee = request.user.employee
+    employee_name = employee.name  # 従業員名を取得
+
+    # 各質問に対する回答を取得
+    answers = {}
+    for questionnaire in questionnaires:
+        answer = DailyReportAnswer.objects.filter(
+            daily_report__employee=employee, 
+            questionnaire=questionnaire
+        ).first()
+        if answer:
+            answers[questionnaire.id] = answer.answer
 
     # コンテキストにデータを渡す
     context = {
-        'questionnaires': questionnaires,
+        'questionnaires': paginated_questions,
         'options': options,
+        'page': page,
+        'total_pages': paginator.num_pages,
+        'employee_id': employee.id,  # 従業員ID
+        'employee_name': employee_name,  # 従業員名
+        'answers': answers  # 各質問の回答
     }
 
     return render(request, 'myapp/submit_answers.html', context)
@@ -190,7 +229,7 @@ def home(request):
  #signup
 class SignUpView(CreateView):
     form_class = SignUpForm
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("myapp:home")
     template_name = "myapp/signup.html"
 
     def form_valid(self, form):

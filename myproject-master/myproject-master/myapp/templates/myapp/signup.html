@@ -1,6 +1,44 @@
+{% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/signup.css' %}">
 <h1>会員登録</h1>
-<form method="POST">
+<form method="POST" class="registration-form">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">アカウント作成</button>
+  
+  <!-- ユーザー名フィールド -->
+  <div class="form-group">
+    {{ form.username.label_tag }}
+    {{ form.username }}
+    {% if form.username.errors %}
+      <div class="error">{{ form.username.errors }}</div>
+    {% endif %}
+  </div>
+
+  <!-- メールフィールド -->
+  <div class="form-group">
+    {{ form.email.label_tag }}
+    {{ form.email }}
+    {% if form.email.errors %}
+      <div class="error">{{ form.email.errors }}</div>
+    {% endif %}
+  </div>
+
+  <!-- パスワードフィールド -->
+  <div class="form-group">
+    {{ form.password1.label_tag }}
+    {{ form.password1 }}
+    {% if form.password1.errors %}
+      <div class="error">{{ form.password1.errors }}</div>
+    {% endif %}
+  </div>
+
+  <!-- パスワード確認フィールド -->
+  <div class="form-group">
+    {{ form.password2.label_tag }}
+    {{ form.password2 }}
+    {% if form.password2.errors %}
+      <div class="error">{{ form.password2.errors }}</div>
+    {% endif %}
+  </div>
+
+  <button type="submit" class="submit-button">アカウント作成</button>
 </form>
