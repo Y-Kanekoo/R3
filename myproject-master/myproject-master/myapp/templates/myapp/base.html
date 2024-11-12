@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>従業員管理システム</title>
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
+    <title>{% block title %}MyApp{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'myapp/css/style.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'employee_management' %}">従業員管理システム</a>
-        </div>
-    </nav>
+    <header>
+        <h1>GIVE&GIFT</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'myapp:home' %}">ホーム</a></li>
+                <li><a href="{% url 'myapp:show_employees' %}">社員リスト</a></li>
+                <li><a href="{% url 'myapp:show_questionnaires' %}">アンケートリスト</a></li>
+                <li><a href="{% url 'myapp:show_daily_reports' %}">日報</a></li>
+                <li><a href="{% url 'myapp:profile' %}">プロフィール</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <main class="py-4">
+    <!-- 各ページのコンテンツを挿入 -->
+    <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="footer mt-auto py-3 bg-light">
-        <div class="container text-center">
-            <span class="text-muted">© 2024 従業員管理システム</span>
-        </div>
+    <footer>
+        <p>&copy; 2024 give&gift</p>
     </footer>
 </body>
 </html>

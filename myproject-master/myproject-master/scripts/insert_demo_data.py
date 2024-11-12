@@ -4,13 +4,13 @@ from myapp.models import Employee, Questionnaire, DailyReport, QuestionnaireThre
 from myapp.models import User
 def run():
 
-    # 既存のデータを削除
-    Employee.objects.all().delete()
-    Questionnaire.objects.all().delete()
-    DailyReport.objects.all().delete()
-    QuestionnaireThreshold.objects.all().delete()
-    DailyReportAnswer.objects.all().delete()
-    QuestionnaireOption.objects.all().delete()
+    # # 既存のデータを削除
+    # Employee.objects.all().delete()
+    # Questionnaire.objects.all().delete()
+    # DailyReport.objects.all().delete()
+    # QuestionnaireThreshold.objects.all().delete()
+    # DailyReportAnswer.objects.all().delete()
+    # QuestionnaireOption.objects.all().delete()
 
 
 # Userデータ

@@ -1,3 +1,16 @@
+*{
+    margin: 0;
+}
+header {
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    background-color: #40b1de; /* 背景色を付けるなど */
+  }
+li{
+    padding-left: 40px;
+}
+  
 table {
     width: 100%;
     border-collapse: collapse;
@@ -12,4 +25,9 @@ th, td {
 .threshold-exceeded {
     background-color: #ffcccc; /* 閾値超過時にセルを赤っぽくする */
   }
-  
+
+ul {
+    display: flex;
+    list-style:none;
+    padding-right: 0;
+}
