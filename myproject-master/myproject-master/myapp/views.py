@@ -226,8 +226,60 @@ class CustomLogoutView(LogoutView):
         return reverse_lazy('myapp:login')
 
 #ホーム画面
+@login_required
 def home(request):
-    return render(request, 'myapp/home.html')
+    # ログイン中のユーザーのemployee_idを取得
+    employee_id = request.user.employee.id  # Assuming User model has a relation to Employee as `employee`
+
+    # ログイン中のユーザーのレポートのみを取得
+    reports = DailyReport.objects.select_related('employee').filter(employee_id=employee_id)
+
+    # 質問を取得
+    questionnaires = Questionnaire.objects.all().order_by('id')
+
+    # 質問の選択肢を取得して辞書に整理
+    options = QuestionnaireOption.objects.all()
+    option_dict = {
+        (option.questionnaire_id, option.option_value): option.option_text
+        for option in options
+    }
+
+    # レポートごとに回答を整理
+    report_data = []
+    for report in reports:
+        # そのレポートに関連する回答を取得して質問の順にソート
+        report_answers = DailyReportAnswer.objects.filter(daily_report=report).select_related('questionnaire').order_by('questionnaire__id')
+
+        # 各回答を選択肢のテキストに変換してリストに追加
+        answer_data = []
+        for answer in report_answers:
+            try:
+                answer_value = int(answer.answer)
+                answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
+            except ValueError:
+                answer_text = answer.answer
+            
+            answer_data.append({
+                'question': answer.questionnaire.title,
+                'answer': answer_text,
+            })
+
+        # レポートのデータをリストに追加
+        report_data.append({
+            'id': report.id,
+            'employee': report.employee.name,
+            'report_datetime': report.report_datetime,
+            'report_type': report.report_type,
+            'created_at': report.created_at,
+            'updated_at': report.updated_at,
+            'answers': answer_data
+        })
+
+    return render(request, 'myapp/home.html', {
+        'reports': report_data,
+        'questionnaires': questionnaires, 
+    })
+
  #signup
 class SignUpView(CreateView):
     form_class = SignUpForm
@@ -245,12 +297,24 @@ User = get_user_model()
 def profile(request):
     if request.method == "POST":
         user = request.user
-        user.email = request.POST["email"]
-        user.username = request.POST["username"]
+        # フォームから送信されたデータを取得し、`user`オブジェクトに設定
+        user.email = request.POST.get("email")  # emailの更新
+        username = request.POST.get("username")  # usernameの更新
+        
+        # usernameが存在する場合にのみ更新
+        if username:
+            user.username = username
+        
+        # データベースに保存
         user.save()
-        return redirect("profile")
+        
+        # 保存後にプロフィールページをリロード
+        return redirect("myapp:profile")
     else:
-        return render(request, "myapp/profile.html")
+        # 現在のユーザー情報をフォームに表示
+        return render(request, "myapp/profile.html", {"user": request.user})
+
+
 
 # アンケート一覧表示ビュー
 def questionnaire_list(request):
