@@ -30,4 +30,6 @@ urlpatterns = [
     path("signup/", views.SignUpView.as_view(), name="signup"),
     path('user-list/', user_list, name='user_list'),
     path('update-user/<int:user_id>/', update_user, name='update_user'),
+
+    path('export_reports_csv/', views.export_reports_csv, name='export_reports_csv'),
 ]
