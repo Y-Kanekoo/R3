@@ -5,51 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホームページ</title>
     {% load static %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'myapp/css/home.css' %}">
-
 </head>
 <body>
     {% include 'myapp/navbar.html' %}
-       <div class="container mt-5">
-            <h1 class="text-center">ようこそ、{{ request.user.username }}さん！</h1>
-        <div class="d-flex justify-content-center mt-4">
-                <a href="{% url 'myapp:submit_answers' %}" class="btn btn-primary">朝日報</a>
-           </div>
-    </div>
-    <h2>今日の回答</h2>
-    <p>日付: {{ today }}</p>
+    
+    <div class="container mt-5">
+        <h1 class="text-center">ようこそ、{{ request.user.username }}さん！</h1>
 
-       <table border="1">
-        <thead>
-          <tr>
-            <th class="column"><a href="?sort=id&direction={% if current_sort == 'id' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートID</a></th>
-            <th class="column"><a href="?sort=employee&direction={% if current_sort == 'employee' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">従業員ID</a></th>
-            <th class="column"><a href="?sort=report_datetime&direction={% if current_sort == 'report_datetime' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポート日時</a></th>
-            <th class="column"><a href="?sort=report_type&direction={% if current_sort == 'report_type' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">レポートタイプ</a></th>
-            <th class="column"><a href="?sort=created_at&direction={% if current_sort == 'created_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">作成日時</a></th>
-            <th class="column"><a href="?sort=updated_at&direction={% if current_sort == 'updated_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}">更新日時</a></th>
-            {% for question in questionnaires %}
-              <th class="column">{{ question.title }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for report in reports %}
-          <tr>
-            <td class="column">{{ report.id }}</td>
-            <td class="column">{{ report.employee }}</td>
-            <td class="column">{{ report.report_datetime }}</td>
-            <td class="column">{{ report.report_type }}</td>
-            <td class="column">{{ report.created_at }}</td>
-            <td class="column">{{ report.updated_at }}</td>
-            {% for answer in report.answers %}
-              <td class="column {% if answer.threshold_exceeded %}threshold-exceeded{% endif %}">
-                {{ answer.answer }}
-              </td>
-            {% endfor %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'myapp:submit_answers' %}" class="btn btn-primary">朝日報</a>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

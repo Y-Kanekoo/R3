@@ -24,7 +24,6 @@ from myapp.signup import SignUpForm  # 最後にアプリ関連のインポー�
 import csv
 from django.http import HttpResponse
 
-
 class EmployeesList(generics.ListAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeesSerializer
@@ -322,22 +321,42 @@ def questionnaire_list(request):
     questionnaires = Questionnaire.objects.all()
     return render(request, 'myapp/questionnaire_list.html', {'questionnaires': questionnaires})
 
+
 # 新しいアンケートを作成するビュー
 def questionnaire_create(request):
     if request.method == 'POST':
         form = QuestionnaireForm(request.POST)
         if form.is_valid():
-            # フォームが有効な場合、アンケートを保存
-            form.save()
-            messages.success(request, "アンケートが作成されました。")
-            return redirect('myapp:questionnaire_list')
+            # Save the Questionnaire instance
+            questionnaire = form.save()
+
+            # If the answer_type is 'select', handle the options
+            if form.cleaned_data['answer_type'] == 'select':
+                # Collect options from the form
+                options_data = request.POST.getlist('option_value')  # Get option_value fields
+                options_text = request.POST.getlist('option_text')   # Get option_text fields
+                
+                for value, text in zip(options_data, options_text):
+                    # Save each option in QuestionnaireOption
+                    QuestionnaireOption.objects.create(
+                        questionnaire=questionnaire,
+                        option_value=value.strip(),
+                        option_text=text.strip()
+                    )
+            
+            if form.cleaned_data['answer_type'] == 'text':
+                text_response = request.POST.get('text_response')
+            if form.cleaned_data['answer_type'] == 'time_field':
+                time_response = request.POST.get('time_response')
+
+            return redirect('myapp:questionnaire_list')  # Redirect to a success page after saving
     else:
         form = QuestionnaireForm()
+
     return render(request, 'myapp/questionnaire_form.html', {'form': form})
 
-# 既存のアンケートを編集するビュー
+# アンケートを編集するビュー
 def questionnaire_update(request, pk):
-    # 編集対象のアンケートを取得
     questionnaire = get_object_or_404(Questionnaire, pk=pk)
     if request.method == 'POST':
         form = QuestionnaireForm(request.POST, instance=questionnaire)
@@ -349,17 +368,14 @@ def questionnaire_update(request, pk):
     else:
         form = QuestionnaireForm(instance=questionnaire)
     return render(request, 'myapp/questionnaire_form.html', {'form': form})
-
 # アンケートを削除するビュー
 def questionnaire_delete(request, pk):
-    # 指定されたアンケートが存在するか確認
     questionnaire = Questionnaire.objects.filter(pk=pk).first()
     if questionnaire:
-        questionnaire.delete()
-        messages.success(request, "アンケートが削除されました。")  # 削除成功メッセージ
+        questionnaire.delete()  # アンケートを削除
+        messages.success(request, "アンケートが削除されました。")
     else:
-        messages.error(request, "指定されたアンケートは存在しません。")  # エラーメッセージ
-    # 一覧画面にリダイレクト
+        messages.error(request, "指定されたアンケートは存在しません。")
     return redirect('myapp:questionnaire_list')
 
 
