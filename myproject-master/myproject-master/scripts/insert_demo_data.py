@@ -2,6 +2,7 @@
 from django.utils import timezone
 from myapp.models import Employee, Questionnaire, DailyReport, QuestionnaireThreshold, DailyReportAnswer, QuestionnaireOption
 from myapp.models import User
+from datetime import datetime
 def run():
 
     # # 既存のデータを削除
@@ -49,28 +50,28 @@ def run():
 
     # アンケートデータを作成
     questionnaires = [
-        {"title": "就寝時間", "type": "morning", "answer_type": "time_select"},
-        {"title": "起床時間", "type": "morning", "answer_type": "time_select"},
-        {"title": "睡眠の質", "type": "morning", "answer_type": "select"},
-        {"title": "今朝の朝食を食べたか", "type": "morning", "answer_type": "select"},
-        {"title": "薬を飲んだ時間", "type": "morning", "answer_type": "time_select"},
-        {"title": "自分の状態", "type": "morning", "answer_type": "select"},
-        {"title": "自分の状態の詳細（自由記述）", "type": "morning", "answer_type": "text"},
-        {"title": "不安感のレベル", "type": "morning", "answer_type": "select"},
-        {"title": "今の感情", "type": "morning", "answer_type": "select"},
-        {"title": "コミュニケーションの意欲", "type": "morning", "answer_type": "select"},
-        {"title": "体の調子", "type": "morning", "answer_type": "select"},
-        {"title": "集中力の調子", "type": "morning", "answer_type": "select"},
-        {"title": "体の不調", "type": "morning", "answer_type": "select"},
-        {"title": "自己肯定感", "type": "morning", "answer_type": "select"},
-        {"title": "誰かに頼っても良いか", "type": "morning", "answer_type": "select"},
-        {"title": "自分が必要とされているか", "type": "morning", "answer_type": "select"},
-        {"title": "その他の気になる症状", "type": "morning", "answer_type": "select"},
-        {"title": "仕事に対して配慮が必要か", "type": "morning", "answer_type": "select"},
-        {"title": "仕事に対して配慮が必要かの詳細", "type": "morning", "answer_type": "text"},
-        {"title": "伝えたいこと", "type": "morning", "answer_type": "text"},
-        {"title": "回復ルーティン", "type": "morning", "answer_type": "text"},
-        {"title": "自身の余裕度", "type": "morning", "answer_type": "select"},
+        {"title": "就寝時間", "type": "朝日報", "answer_type": "time_select"},
+        {"title": "起床時間", "type": "朝日報", "answer_type": "time_select"},
+        {"title": "睡眠の質", "type": "朝日報", "answer_type": "select"},
+        {"title": "今朝の朝食を食べたか", "type": "朝日報", "answer_type": "select"},
+        {"title": "薬を飲んだ時間", "type": "朝日報", "answer_type": "time_select"},
+        {"title": "自分の状態", "type": "朝日報", "answer_type": "select"},
+        {"title": "自分の状態の詳細（自由記述）", "type": "朝日報", "answer_type": "text"},
+        {"title": "不安感のレベル", "type": "朝日報", "answer_type": "select"},
+        {"title": "今の感情", "type": "朝日報", "answer_type": "select"},
+        {"title": "コミュニケーションの意欲", "type": "朝日報", "answer_type": "select"},
+        {"title": "体の調子", "type": "朝日報", "answer_type": "select"},
+        {"title": "集中力の調子", "type": "朝日報", "answer_type": "select"},
+        {"title": "体の不調", "type": "朝日報", "answer_type": "select"},
+        {"title": "自己肯定感", "type": "朝日報", "answer_type": "select"},
+        {"title": "誰かに頼っても良いか", "type": "朝日報", "answer_type": "select"},
+        {"title": "自分が必要とされているか", "type": "朝日報", "answer_type": "select"},
+        {"title": "その他の気になる症状", "type": "朝日報", "answer_type": "select"},
+        {"title": "仕事に対して配慮が必要か", "type": "朝日報", "answer_type": "select"},
+        {"title": "仕事に対して配慮が必要かの詳細", "type": "朝日報", "answer_type": "text"},
+        {"title": "伝えたいこと", "type": "朝日報", "answer_type": "text"},
+        {"title": "回復ルーティン", "type": "朝日報", "answer_type": "text"},
+        {"title": "自身の余裕度", "type": "朝日報", "answer_type": "select"},
     ]
     for q_data in questionnaires:
             questionnaire, created = Questionnaire.objects.get_or_create(**q_data)
@@ -78,9 +79,10 @@ def run():
 
     # デイリーレポートデータを作成
     daily_reports = [
-        {"employee_id": 1, "report_datetime": timezone.now(), "report_type": "morning"},
-        {"employee_id": 2, "report_datetime": timezone.now(), "report_type": "morning"},
-        {"employee_id": 3, "report_datetime": timezone.now(), "report_type": "evening"},
+        {"employee_id": 1, "report_datetime": timezone.now(), "report_type": "朝日報"},
+        {"employee_id": 2, "report_datetime": timezone.now(), "report_type": "朝日報"},
+        {"employee_id": 3, "report_datetime": timezone.now(), "report_type": "朝日報"},
+        {"employee_id": 1,"report_datetime": timezone.make_aware(datetime(2024, 11, 13, 0, 0)), "report_type": "夕日報"}
     ]
     for report_data in daily_reports:
         report, created = DailyReport.objects.get_or_create(**report_data)
@@ -178,7 +180,30 @@ def run():
         {"daily_report_id": 3, "questionnaire_id": 19, "answer": "少し時間調整をお願いしたいです。"},  # 仕事に対して配慮が必要かの詳細（記述）
         {"daily_report_id": 3, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。"},  # 伝えたいこと（記述）
         {"daily_report_id": 3, "questionnaire_id": 21, "answer": "リラックスする時間を取りました。"},  # 回復ルーティン（記述）
-        {"daily_report_id": 3, "questionnaire_id": 22, "answer": 1}  # 自身の余裕度（選択）
+        {"daily_report_id": 3, "questionnaire_id": 22, "answer": 1} , # 自身の余裕度（選択）
+
+        {"daily_report_id": 4, "questionnaire_id": 1, "answer": "22:30"},  # 就寝時間（時間選択）
+        {"daily_report_id": 4, "questionnaire_id": 2, "answer": "07:00"},  # 起床時間（時間選択）
+        {"daily_report_id": 4, "questionnaire_id": 3, "answer": 1},  # 睡眠の質（選択）
+        {"daily_report_id": 4, "questionnaire_id": 4, "answer": 2},  # 今朝の朝食を食べたか（選択）
+        {"daily_report_id": 4, "questionnaire_id": 5, "answer": "08:00"},  # 薬を飲んだ時間（時間選択）
+        {"daily_report_id": 4, "questionnaire_id": 6, "answer": 4},  # 自分の状態（選択）
+        {"daily_report_id": 4, "questionnaire_id": 7, "answer": "体調は安定しているが、少し疲れを感じる。"},  # 自分の状態の詳細（記述）
+        {"daily_report_id": 4, "questionnaire_id": 8, "answer": 3},  # 不安感のレベル（選択）
+        {"daily_report_id": 4, "questionnaire_id": 9, "answer": 1},  # 今の感情（選択）
+        {"daily_report_id": 4, "questionnaire_id": 10, "answer": 4},  # コミュニケーションの意欲（選択）
+        {"daily_report_id": 4, "questionnaire_id": 11, "answer": 3},  # 体の調子（選択）
+        {"daily_report_id": 4, "questionnaire_id": 12, "answer": 3},  # 集中力の調子（選択）
+        {"daily_report_id": 4, "questionnaire_id": 13, "answer": 2},  # 体の不調（選択）
+        {"daily_report_id": 4, "questionnaire_id": 14, "answer": 3},  # 自己肯定感（選択）
+        {"daily_report_id": 4, "questionnaire_id": 15, "answer": 1},  # 誰かに頼っても良いか（選択）
+        {"daily_report_id": 4, "questionnaire_id": 16, "answer": 2},  # 自分が必要とされているか（選択）
+        {"daily_report_id": 4, "questionnaire_id": 17, "answer": 3},  # その他の気になる症状（選択）
+        {"daily_report_id": 4, "questionnaire_id": 18, "answer": 2},  # 仕事に対して配慮が必要か（選択）
+        {"daily_report_id": 4, "questionnaire_id": 19, "answer": "仕事の調整が必要です。"},  # 仕事に対して配慮が必要かの詳細（記述）
+        {"daily_report_id": 4, "questionnaire_id": 20, "answer": "特に伝えたいことはありません。"},  # 伝えたいこと（記述）
+        {"daily_report_id": 4, "questionnaire_id": 21, "answer": "深呼吸とストレッチを行った。"},  # 回復ルーティン（記述）
+        {"daily_report_id": 4, "questionnaire_id": 22, "answer": 3},  # 自身の余裕度（選択）
     ]
 
     for answer_data in answers:
