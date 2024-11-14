@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>日報一覧</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'myapp/css/show_daily_reports.css' %}" />
+
     <script>
       window.onload = function() {
         restoreColumnVisibility();
+        setupAccordion();
       }
 
       function saveColumnVisibility() {
@@ -42,48 +44,81 @@
         checkboxes.forEach((checkbox, index) => {
           const columnHeader = tableHeader.querySelectorAll('th')[index];
           if (checkbox.checked) {
-            columnHeader.style.display = '';
-            Array.from(tableBody.rows).forEach(row => {
-              row.cells[index].style.display = '';
-            });
-          } else {
             columnHeader.style.display = 'none';
             Array.from(tableBody.rows).forEach(row => {
               row.cells[index].style.display = 'none';
             });
+          } else {
+            columnHeader.style.display = '';
+            Array.from(tableBody.rows).forEach(row => {
+              row.cells[index].style.display = '';
+            });
           }
         });
       }
+
+      function setupAccordion() {
+        document.querySelectorAll('.accordion-header').forEach(header => {
+          header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            if (content.style.display === 'none' || content.style.display === '') {
+              content.style.display = 'block';
+            } else {
+              content.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      function uncheckAllCheckboxes() {
+        const checkboxes = document.querySelectorAll('.column-checkbox');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+        });
+      }
     </script>
-  </head>
-  <body>
+</head>
+<body>
     {% include 'myapp/navbar.html' %}
 
     <div class="container my-5">
       <header>
         <h1 class="text-center">日報一覧</h1>
-        <a href="{% url 'myapp:export_reports_csv' %}" class="csv-download-button">CSVダウンロード</a>
       </header>
 
       <form class="mb-4">
         <h2>表示するレポート列を選択</h2>
-        <div class="column-selection d-flex flex-wrap gap-2">
-          <div class="checkbox-group">
-            <label><input type="checkbox" class="column-checkbox" checked /> レポートID</label>
-            <label><input type="checkbox" class="column-checkbox" checked /> 従業員ID</label>
-            <label><input type="checkbox" class="column-checkbox" checked /> レポート日時</label>
-            <label><input type="checkbox" class="column-checkbox" checked /> レポートタイプ</label>
-            <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label>
-            <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label>
-          </div>
 
-          <div class="checkbox-group">
+        <!-- 基本情報のチェックボックス -->
+        <div class="accordion-section">
+          <div class="accordion-header mt-3">基本情報</div>
+          <div class="accordion-content">
+            <label><input type="checkbox" class="column-checkbox" checked /> レポートID</label><br>
+            <label><input type="checkbox" class="column-checkbox" checked /> 従業員ID</label><br>
+            <label><input type="checkbox" class="column-checkbox" checked /> レポート日時</label><br>
+            <label><input type="checkbox" class="column-checkbox" checked /> レポートタイプ</label><br>
+            <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label><br>
+            <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label><br>
+          </div>
+        </div>
+
+        <!-- 質問内容のチェックボックス -->
+        <div class="accordion-section">
+          <div class="accordion-header mt-3">質問内容</div>
+          <div class="accordion-content">
             {% for question in questionnaires %}
-              <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label>
+              <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label><br>
             {% endfor %}
           </div>
         </div>
-        <button type="button" class="btn btn-success" onclick="saveColumnVisibility()">適用</button>
+
+        <div class="d-flex align-items-center justify-content-between mt-3">
+          <div>
+            <button type="button" class="btn btn-secondary" onclick="uncheckAllCheckboxes()">すべてのチェックを外す</button>
+            <button type="button" class="btn btn-success" onclick="saveColumnVisibility()">適用</button>
+          </div>
+          <a href="{% url 'myapp:export_reports_csv' %}" class="btn btn-primary ml-auto">CSVダウンロード</a>
+        </div>
       </form>
 
       <div class="table-responsive">
@@ -122,6 +157,13 @@
       </div>
     </div>
 
-  </body>
+</body>
 </html>
+
+
+
+
+
+
+
 

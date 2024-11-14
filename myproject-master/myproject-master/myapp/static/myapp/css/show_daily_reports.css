@@ -10,6 +10,10 @@ h1 {
   color: #333;
 }
 
+h2 {
+  margin-top: 50px;
+}
+
 .column-selection {
   display: flex;
   flex-wrap: wrap;
@@ -32,10 +36,6 @@ h1 {
   margin-right: 5px;
 }
 
-.btn-success {
-  margin-top: 10px;
-}
-
 .table {
   width: 100%;
   margin-top: 20px;
@@ -46,11 +46,35 @@ h1 {
   color: white;
 }
 
+
 .threshold-exceeded {
-  background-color: #ffcccc;
+  background-color: #ffcccc !important;
 }
 
 .text-center {
   text-align: center;
+}
+
+.accordion-header {
+  width: 100%;
+  text-align: left;
+  font-weight: bold;
+  background-color: #f0f0f0; /* 背景色を設定 */
+  border: none;
+  outline: black;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px; /* 角を丸くする */
+}
+
+.accordion-header:hover{
+  background-color: #b0b0b0;
+}
+
+.accordion-content {
+  display: none;
+  background-color: #eaeaea;
+  padding: 10px 0;
+  border-radius: 8px;
 }
 
