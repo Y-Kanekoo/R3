@@ -8,7 +8,7 @@ from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Que
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_datetime,parse_date
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test,login_required
 from django.contrib import messages
@@ -282,23 +282,20 @@ def show_own_answer(request):
     # ログインユーザーに関連する Employee を取得
     employee = Employee.objects.get(user=request.user)
 
-    # デフォルトで全てのレポートと回答を取得
-    reports = DailyReport.objects.filter(employee=employee).select_related('employee')
-    answers = DailyReportAnswer.objects.filter(daily_report__employee=employee).select_related('questionnaire').order_by('questionnaire__id')
-
     # 検索条件（日付とレポートタイプ）の取得
     search_date = request.GET.get('date', None)
     search_type = request.GET.get('type', None)
 
-    # 日付によるフィルタリング
+    # 日付とレポートタイプでフィルタリングしつつ、日付順で並べ替え
+    reports = DailyReport.objects.filter(employee=employee).select_related('employee').order_by('-report_datetime')
     if search_date:
-        # 文字列を日付形式に変換してフィルタ
-        date_obj = parse_datetime(search_date)
-        reports = reports.filter(report_datetime__date=date_obj.date())
-
-    # レポートタイプによるフィルタリング
+        # search_date を日付オブジェクトに変換してフィルタリング
+        reports = reports.filter(report_datetime__date=parse_date(search_date))
     if search_type:
         reports = reports.filter(report_type=search_type)
+
+    # 回答を取得して質問の順にソート
+    answers = DailyReportAnswer.objects.filter(daily_report__in=reports).select_related('questionnaire').order_by('questionnaire__id')
 
     # 質問の選択肢を取得して辞書に整理
     options = QuestionnaireOption.objects.all()
