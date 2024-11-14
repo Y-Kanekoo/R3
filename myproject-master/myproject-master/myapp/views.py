@@ -8,6 +8,7 @@ from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Que
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
+from django.utils.dateparse import parse_datetime
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test,login_required
 from django.contrib import messages
@@ -227,14 +228,77 @@ class CustomLogoutView(LogoutView):
 #ホーム画面
 @login_required
 def home(request):
-    # ログイン中のユーザーのemployee_idを取得
-    employee_id = request.user.employee.id  # Assuming User model has a relation to Employee as `employee`
+    # ログインユーザーに関連する Employee を取得
+    employee = Employee.objects.get(user=request.user)
 
-    # ログイン中のユーザーのレポートのみを取得
-    reports = DailyReport.objects.select_related('employee').filter(employee_id=employee_id)
+    # 最新のレポートを1つだけ取得
+    latest_report = DailyReport.objects.filter(employee=employee).order_by('-report_datetime').first()
 
-    # 質問を取得
-    questionnaires = Questionnaire.objects.all().order_by('id')
+    if latest_report:
+        # 最新のレポートに関連する回答を取得
+        answers = DailyReportAnswer.objects.filter(daily_report=latest_report).select_related('questionnaire').order_by('questionnaire__id')
+
+        # 質問の選択肢を取得して辞書に整理
+        options = QuestionnaireOption.objects.all()
+        option_dict = {
+            (option.questionnaire_id, option.option_value): option.option_text
+            for option in options
+        }
+
+        # 回答を選択肢のテキストに変換
+        report_answers = []
+        for answer in answers:
+            try:
+                answer_value = int(answer.answer)
+                answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
+            except ValueError:
+                answer_text = answer.answer
+
+            report_answers.append({
+                'question': answer.questionnaire.title,
+                'answer': answer_text,
+            })
+
+        report_data = {
+            'id': latest_report.id,
+            'employee': latest_report.employee.name,
+            'report_datetime': latest_report.report_datetime,
+            'report_type': latest_report.report_type,
+            'created_at': latest_report.created_at,
+            'updated_at': latest_report.updated_at,
+            'answers': report_answers
+        }
+
+    else:
+        report_data = None
+
+    # home.html にデータを渡す
+    return render(request, 'myapp/home.html', {
+        'report': report_data,
+    })
+
+#自身の回答データ確認view
+def show_own_answer(request):
+    # ログインユーザーに関連する Employee を取得
+    employee = Employee.objects.get(user=request.user)
+
+    # デフォルトで全てのレポートと回答を取得
+    reports = DailyReport.objects.filter(employee=employee).select_related('employee')
+    answers = DailyReportAnswer.objects.filter(daily_report__employee=employee).select_related('questionnaire').order_by('questionnaire__id')
+
+    # 検索条件（日付とレポートタイプ）の取得
+    search_date = request.GET.get('date', None)
+    search_type = request.GET.get('type', None)
+
+    # 日付によるフィルタリング
+    if search_date:
+        # 文字列を日付形式に変換してフィルタ
+        date_obj = parse_datetime(search_date)
+        reports = reports.filter(report_datetime__date=date_obj.date())
+
+    # レポートタイプによるフィルタリング
+    if search_type:
+        reports = reports.filter(report_type=search_type)
 
     # 質問の選択肢を取得して辞書に整理
     options = QuestionnaireOption.objects.all()
@@ -246,24 +310,21 @@ def home(request):
     # レポートごとに回答を整理
     report_data = []
     for report in reports:
-        # そのレポートに関連する回答を取得して質問の順にソート
-        report_answers = DailyReportAnswer.objects.filter(daily_report=report).select_related('questionnaire').order_by('questionnaire__id')
+        report_answers = []
+        for answer in answers:
+            if answer.daily_report_id == report.id:
+                # 回答を選択肢のテキストに変換
+                try:
+                    answer_value = int(answer.answer)
+                    answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
+                except ValueError:
+                    answer_text = answer.answer
 
-        # 各回答を選択肢のテキストに変換してリストに追加
-        answer_data = []
-        for answer in report_answers:
-            try:
-                answer_value = int(answer.answer)
-                answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
-            except ValueError:
-                answer_text = answer.answer
-            
-            answer_data.append({
-                'question': answer.questionnaire.title,
-                'answer': answer_text,
-            })
+                report_answers.append({
+                    'question': answer.questionnaire.title,
+                    'answer': answer_text,
+                })
 
-        # レポートのデータをリストに追加
         report_data.append({
             'id': report.id,
             'employee': report.employee.name,
@@ -271,12 +332,12 @@ def home(request):
             'report_type': report.report_type,
             'created_at': report.created_at,
             'updated_at': report.updated_at,
-            'answers': answer_data
+            'answers': report_answers
         })
 
-    return render(request, 'myapp/home.html', {
+    # show_own_answer.html にデータを渡す
+    return render(request, 'myapp/show_own_answer.html', {
         'reports': report_data,
-        'questionnaires': questionnaires, 
     })
 
  #signup
