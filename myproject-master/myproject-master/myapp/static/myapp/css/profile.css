@@ -6,11 +6,9 @@
 }
 
 body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #f4f7fc;
     color: #333;
-    line-height: 1.6;
-    padding: 20px;
 }
 
 .profile-container {
@@ -60,11 +58,11 @@ input[type="email"] {
 
 input[type="text"]:focus,
 input[type="email"]:focus {
-    border-color: #3498db;
+    border-color: #6c7c87;
     outline: none;
 }
 
-button[type="submit"] {
+button[type="submit1"] {
     background-color: #3498db;
     color: #ffffff;
     border: none;
@@ -76,15 +74,15 @@ button[type="submit"] {
     transition: background-color 0.3s;
 }
 
-button[type="submit"]:hover {
+button[type="submit1"]:hover {
     background-color: #2980b9;
 }
 
-button[type="submit"]:active {
+button[type="submit1"]:active {
     background-color: #1f6f98;
 }
 
-button[type="submit"]:focus {
+button[type="submit1"]:focus {
     outline: none;
 }
 
@@ -108,7 +106,7 @@ button[type="submit"]:focus {
         font-size: 1rem;
     }
 
-    button[type="submit"] {
+    button[type="submit1"] {
         font-size: 1.1rem;
         padding: 14px;
     }
