@@ -8,6 +8,7 @@ from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Que
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
+from django.utils.dateparse import parse_datetime
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test,login_required
 from django.contrib import messages
@@ -23,7 +24,6 @@ from rest_framework import generics  # 外部ライブラリのインポート
 from myapp.signup import SignUpForm  # 最後にアプリ関連のインポートを行う
 import csv
 from django.http import HttpResponse
-
 
 class EmployeesList(generics.ListAPIView):
     queryset = Employee.objects.all()
@@ -226,8 +226,120 @@ class CustomLogoutView(LogoutView):
         return reverse_lazy('myapp:login')
 
 #ホーム画面
+@login_required
 def home(request):
-    return render(request, 'myapp/home.html')
+    # ログインユーザーに関連する Employee を取得
+    employee = Employee.objects.get(user=request.user)
+
+    # 最新のレポートを1つだけ取得
+    latest_report = DailyReport.objects.filter(employee=employee).order_by('-report_datetime').first()
+
+    if latest_report:
+        # 最新のレポートに関連する回答を取得
+        answers = DailyReportAnswer.objects.filter(daily_report=latest_report).select_related('questionnaire').order_by('questionnaire__id')
+
+        # 質問の選択肢を取得して辞書に整理
+        options = QuestionnaireOption.objects.all()
+        option_dict = {
+            (option.questionnaire_id, option.option_value): option.option_text
+            for option in options
+        }
+
+        # 回答を選択肢のテキストに変換
+        report_answers = []
+        for answer in answers:
+            try:
+                answer_value = int(answer.answer)
+                answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
+            except ValueError:
+                answer_text = answer.answer
+
+            report_answers.append({
+                'question': answer.questionnaire.title,
+                'answer': answer_text,
+            })
+
+        report_data = {
+            'id': latest_report.id,
+            'employee': latest_report.employee.name,
+            'report_datetime': latest_report.report_datetime,
+            'report_type': latest_report.report_type,
+            'created_at': latest_report.created_at,
+            'updated_at': latest_report.updated_at,
+            'answers': report_answers
+        }
+
+    else:
+        report_data = None
+
+    # home.html にデータを渡す
+    return render(request, 'myapp/home.html', {
+        'report': report_data,
+    })
+
+#自身の回答データ確認view
+def show_own_answer(request):
+    # ログインユーザーに関連する Employee を取得
+    employee = Employee.objects.get(user=request.user)
+
+    # デフォルトで全てのレポートと回答を取得
+    reports = DailyReport.objects.filter(employee=employee).select_related('employee')
+    answers = DailyReportAnswer.objects.filter(daily_report__employee=employee).select_related('questionnaire').order_by('questionnaire__id')
+
+    # 検索条件（日付とレポートタイプ）の取得
+    search_date = request.GET.get('date', None)
+    search_type = request.GET.get('type', None)
+
+    # 日付によるフィルタリング
+    if search_date:
+        # 文字列を日付形式に変換してフィルタ
+        date_obj = parse_datetime(search_date)
+        reports = reports.filter(report_datetime__date=date_obj.date())
+
+    # レポートタイプによるフィルタリング
+    if search_type:
+        reports = reports.filter(report_type=search_type)
+
+    # 質問の選択肢を取得して辞書に整理
+    options = QuestionnaireOption.objects.all()
+    option_dict = {
+        (option.questionnaire_id, option.option_value): option.option_text
+        for option in options
+    }
+
+    # レポートごとに回答を整理
+    report_data = []
+    for report in reports:
+        report_answers = []
+        for answer in answers:
+            if answer.daily_report_id == report.id:
+                # 回答を選択肢のテキストに変換
+                try:
+                    answer_value = int(answer.answer)
+                    answer_text = option_dict.get((answer.questionnaire.id, answer_value), answer.answer)
+                except ValueError:
+                    answer_text = answer.answer
+
+                report_answers.append({
+                    'question': answer.questionnaire.title,
+                    'answer': answer_text,
+                })
+
+        report_data.append({
+            'id': report.id,
+            'employee': report.employee.name,
+            'report_datetime': report.report_datetime,
+            'report_type': report.report_type,
+            'created_at': report.created_at,
+            'updated_at': report.updated_at,
+            'answers': report_answers
+        })
+
+    # show_own_answer.html にデータを渡す
+    return render(request, 'myapp/show_own_answer.html', {
+        'reports': report_data,
+    })
+
  #signup
 class SignUpView(CreateView):
     form_class = SignUpForm
@@ -245,12 +357,24 @@ User = get_user_model()
 def profile(request):
     if request.method == "POST":
         user = request.user
-        user.email = request.POST["email"]
-        user.username = request.POST["username"]
+        # フォームから送信されたデータを取得し、`user`オブジェクトに設定
+        user.email = request.POST.get("email")  # emailの更新
+        username = request.POST.get("username")  # usernameの更新
+        
+        # usernameが存在する場合にのみ更新
+        if username:
+            user.username = username
+        
+        # データベースに保存
         user.save()
-        return redirect("profile")
+        
+        # 保存後にプロフィールページをリロード
+        return redirect("myapp:profile")
     else:
-        return render(request, "myapp/profile.html")
+        # 現在のユーザー情報をフォームに表示
+        return render(request, "myapp/profile.html", {"user": request.user})
+
+
 
 # アンケート一覧表示ビュー
 def questionnaire_list(request):
@@ -258,22 +382,42 @@ def questionnaire_list(request):
     questionnaires = Questionnaire.objects.all()
     return render(request, 'myapp/questionnaire_list.html', {'questionnaires': questionnaires})
 
+
 # 新しいアンケートを作成するビュー
 def questionnaire_create(request):
     if request.method == 'POST':
         form = QuestionnaireForm(request.POST)
         if form.is_valid():
-            # フォームが有効な場合、アンケートを保存
-            form.save()
-            messages.success(request, "アンケートが作成されました。")
-            return redirect('myapp:questionnaire_list')
+            # Save the Questionnaire instance
+            questionnaire = form.save()
+
+            # If the answer_type is 'select', handle the options
+            if form.cleaned_data['answer_type'] == 'select':
+                # Collect options from the form
+                options_data = request.POST.getlist('option_value')  # Get option_value fields
+                options_text = request.POST.getlist('option_text')   # Get option_text fields
+                
+                for value, text in zip(options_data, options_text):
+                    # Save each option in QuestionnaireOption
+                    QuestionnaireOption.objects.create(
+                        questionnaire=questionnaire,
+                        option_value=value.strip(),
+                        option_text=text.strip()
+                    )
+            
+            if form.cleaned_data['answer_type'] == 'text':
+                text_response = request.POST.get('text_response')
+            if form.cleaned_data['answer_type'] == 'time_field':
+                time_response = request.POST.get('time_response')
+
+            return redirect('myapp:questionnaire_list')  # Redirect to a success page after saving
     else:
         form = QuestionnaireForm()
+
     return render(request, 'myapp/questionnaire_form.html', {'form': form})
 
-# 既存のアンケートを編集するビュー
+# アンケートを編集するビュー
 def questionnaire_update(request, pk):
-    # 編集対象のアンケートを取得
     questionnaire = get_object_or_404(Questionnaire, pk=pk)
     if request.method == 'POST':
         form = QuestionnaireForm(request.POST, instance=questionnaire)
@@ -285,17 +429,14 @@ def questionnaire_update(request, pk):
     else:
         form = QuestionnaireForm(instance=questionnaire)
     return render(request, 'myapp/questionnaire_form.html', {'form': form})
-
 # アンケートを削除するビュー
 def questionnaire_delete(request, pk):
-    # 指定されたアンケートが存在するか確認
     questionnaire = Questionnaire.objects.filter(pk=pk).first()
     if questionnaire:
-        questionnaire.delete()
-        messages.success(request, "アンケートが削除されました。")  # 削除成功メッセージ
+        questionnaire.delete()  # アンケートを削除
+        messages.success(request, "アンケートが削除されました。")
     else:
-        messages.error(request, "指定されたアンケートは存在しません。")  # エラーメッセージ
-    # 一覧画面にリダイレクト
+        messages.error(request, "指定されたアンケートは存在しません。")
     return redirect('myapp:questionnaire_list')
 
 

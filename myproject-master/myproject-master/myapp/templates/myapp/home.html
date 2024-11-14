@@ -5,19 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホームページ</title>
     {% load static %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'myapp/css/home.css' %}">
-
 </head>
 <body>
-
-    <!-- Navbar -->
     {% include 'myapp/navbar.html' %}
 
     <div class="container mt-5">
         <h1 class="text-center">ようこそ、{{ request.user.username }}さん！</h1>
+
         <div class="d-flex justify-content-center mt-4">
             <a href="{% url 'myapp:submit_answers' %}" class="btn btn-primary">朝日報</a>
         </div>
+
+        <!-- データ確認ボタン -->
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'myapp:show_own_answer' %}" class="btn btn-success">データ確認</a>
+        </div>
+
+        <h2 class="mt-5">最新のレポート</h2>
+
+        {% if report %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>レポート日付</th>
+                        <th>レポートタイプ</th>
+                        <th>質問</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ report.report_datetime }}</td>
+                        <td>{{ report.report_type }}</td>
+                        <td>
+                            <ul>
+                                {% for answer in report.answers %}
+                                    <li><strong>{{ answer.question }}:</strong> {{ answer.answer }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p>該当するレポートはありません。</p>
+        {% endif %}
     </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

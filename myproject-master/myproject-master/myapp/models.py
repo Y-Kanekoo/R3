@@ -115,13 +115,23 @@ class DailyReportMorning(models.Model):
 
 
 class Questionnaire(models.Model):
+    ANSWER_TYPE_CHOICES = [
+        ('select', '選択式'),
+        ('text', '自由記述'),
+        ('time_field', '時間選択'),
+        ]
     title = models.CharField(max_length=255)
     type = models.CharField(
-        max_length=10, choices=[('morning', 'Morning'), ('evening', 'Evening')]
+        max_length=10, choices=[('morning', '朝日報'), ('evening', '夕日報')]
     )
-    answer_type = models.CharField(max_length=50, default="未指定")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    answer_type = models.CharField(
+        max_length=50,
+        choices=ANSWER_TYPE_CHOICES,
+        default='multiple_choice',
+    )
+    options = models.TextField(blank=True, null=True)  # 追加: 複数選択肢の場合に使う
 
 
 class QuestionnaireOption(models.Model):

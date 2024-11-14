@@ -1,7 +1,7 @@
 # forms.py
 
 from django import forms
-from .models import Employee, Questionnaire
+from .models import Employee, Questionnaire,QuestionnaireOption
 
 
 class EmployeeForm(forms.ModelForm):
@@ -23,3 +23,12 @@ class QuestionnaireForm(forms.ModelForm):
     class Meta:
         model = Questionnaire
         fields = ['title', 'type', 'answer_type']
+        labels = {
+            'title': '質問文',
+            'type': '日報の種類',
+            'answer_type': '回答形式',
+        }
+
+class QuestionnaireOptionForm(forms.Form):
+    option_value = forms.CharField(max_length=255, label="オプション値")
+    option_text = forms.CharField(max_length=255, label="オプションテキスト")

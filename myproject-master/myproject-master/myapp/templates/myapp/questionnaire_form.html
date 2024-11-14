@@ -1,32 +1,96 @@
+<!-- Bootstrap CSS の読み込み（CDN を利用） -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アンケート作成</title>
-    {% load static %}
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    <link rel="stylesheet" href="{% static 'myapp/css/questionnaire_form.css' %}">
-</head>
-<body>
-
-<div class="container mt-5">
-    <div class="card p-4 shadow-sm">
-        <h2 class="text-center mb-4">アンケート作成</h2>
-
-        <form method="post" class="form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-actions d-flex justify-content-between mt-3">
-                <button type="submit" class="btn btn-primary">保存</button>
-                <a href="{% url 'myapp:questionnaire_list' %}" class="btn btn-secondary">アンケート一覧に戻る</a>
-            </div>
-        </form>
+<form method="POST" class="container mt-4 p-4 border rounded bg-light">
+    {% csrf_token %}
+    
+    <!-- フォームフィールド -->
+    <div class="form-group">
+        {{ form.as_p }}
     </div>
-</div>
-{% bootstrap_javascript %}
-</body>
-</html>
 
+    <!-- 動的フィールドを表示するコンテナ -->
+    <div id="dynamic-field-container"></div>
+
+    <!-- オプションフィールドを動的に追加するコンテナ (select 用) -->
+    <div id="options-container" class="mt-3" style="display: none;">
+        <div class="option-item form-row mb-2">
+            <div class="col">
+                <label for="option_value">選択肢の番号</label>
+                <input type="text" class="form-control" name="option_value" placeholder="オプション値" required>
+            </div>
+            <div class="col">
+                <label for="option_text">回答の選択肢</label>
+                <input type="text" class="form-control" name="option_text" placeholder="オプションテキスト" required>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 選択肢を追加するボタン (select 用) -->
+    <button type="button" id="add-option" class="btn btn-info mt-2">選択肢を追加</button>
+
+    <!-- 保存ボタン -->
+    <button type="submit" class="btn btn-primary mt-2">保存</button>
+
+    <!-- 戻るボタン -->
+    <a href="{% url 'myapp:questionnaire_list' %}" class="btn btn-secondary mt-2">戻る</a>
+</form>
+
+<script>
+    const answerTypeField = document.querySelector('[name="answer_type"]');
+    const dynamicFieldContainer = document.getElementById('dynamic-field-container');
+    const optionsContainer = document.getElementById('options-container');
+    const addOptionButton = document.getElementById('add-option');
+
+    // answer_type の選択に応じて動的にフィールドを表示する関数
+    function renderDynamicField() {
+        dynamicFieldContainer.innerHTML = '';  // 以前のフィールドをクリア
+        optionsContainer.style.display = 'none';
+        addOptionButton.style.display = 'none';
+
+        if (answerTypeField.value === 'text') {
+            // text の場合、テキスト入力フィールドを表示
+            dynamicFieldContainer.innerHTML = `
+                <div class="form-group">
+                    <label for="text_response">テキスト回答</label>
+                    <input type="text" class="form-control" name="text_response" placeholder="テキストを入力してください" required>
+                </div>
+            `;
+        } else if (answerTypeField.value === 'time_field') {
+            // time_field の場合、時間入力フィールドを表示
+            dynamicFieldContainer.innerHTML = `
+                <div class="form-group">
+                    <label for="time_response">時間を選択</label>
+                    <input type="time" class="form-control" name="time_response" required>
+                </div>
+            `;
+        } else if (answerTypeField.value === 'select') {
+            // select の場合、オプション入力フィールドを動的に追加できるようにする
+            optionsContainer.style.display = 'block';
+            addOptionButton.style.display = 'inline-block';
+        }
+    }
+
+    // answer_type が変更されたときにフィールドを更新
+    answerTypeField.addEventListener('change', renderDynamicField);
+    renderDynamicField();  // 初回表示時に実行
+
+    // 選択肢を動的に追加する処理 (select 用)
+    addOptionButton.addEventListener('click', function() {
+        const newOption = document.createElement('div');
+        newOption.classList.add('option-item', 'form-row', 'mb-2');
+        
+        newOption.innerHTML = `
+            <div class="col">
+                <label for="option_value">オプション値</label>
+                <input type="text" class="form-control" name="option_value" placeholder="オプション値" required>
+            </div>
+            <div class="col">
+                <label for="option_text">オプションテキスト</label>
+                <input type="text" class="form-control" name="option_text" placeholder="オプションテキスト" required>
+            </div>
+        `;
+        
+        optionsContainer.appendChild(newOption);
+    });
+</script>

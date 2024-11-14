@@ -51,6 +51,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    'myproject.middleware.SessionTimeoutMiddleware', 
+
 ]
 
 ROOT_URLCONF = "myproject.urls"
@@ -91,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'giveandgift',  # データベース名
         'USER': 'root',  # ユーザー名
-        'PASSWORD': '200214',  # パスワード
+        'PASSWORD': 'root',  # パスワード
         'HOST': 'localhost',  # ホスト (通常は'localhost')
         'PORT': '3306',  # ポート (通常は3306)
     }
@@ -150,7 +153,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # セッションの有効期間を設定（例: 30分）
 SESSION_COOKIE_AGE = 30 * 60  # 秒数で指定
 SESSION_SAVE_EVERY_REQUEST = True  # 各リクエストでセッションの期限を更新
-
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
@@ -158,3 +161,4 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = "myapp.User"
 LOGOUT_REDIRECT_URL = "myapp:login"
 LOGIN_REDIRECT_URL = 'myapp:home'
+LOGIN_URL = 'myapp:login'
