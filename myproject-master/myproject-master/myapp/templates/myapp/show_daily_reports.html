@@ -65,6 +65,25 @@
         <a href="{% url 'myapp:export_reports_csv' %}" class="csv-download-button">CSVダウンロード</a>
       </header>
 
+      <!-- フィルターフォームの追加 -->
+      <form method="get" action="{% url 'myapp:show_daily_reports' %}" class="mb-4">
+        <div class="form-row">
+          <div class="col-md-4">
+            <label for="username">社員名:</label>
+            <input type="text" id="username" name="username" class="form-control" value="{{ request.GET.username }}">
+          </div>
+          <div class="col-md-4">
+            <label for="date">日付:</label>
+            <input type="date" id="date" name="date" class="form-control" value="{{ request.GET.date }}">
+          </div>
+          <div class="col-md-4">
+            <label for="type">レポートタイプ:</label>
+            <input type="text" id="type" name="type" class="form-control" value="{{ request.GET.type }}">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">検索</button>
+      </form>
+
       <form class="mb-4">
         <h2>表示するレポート列を選択</h2>
         <div class="column-selection d-flex flex-wrap gap-2">
@@ -76,7 +95,7 @@
             <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label>
             <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label>
           </div>
-
+        
           <div class="checkbox-group">
             {% for question in questionnaires %}
               <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label>
@@ -124,4 +143,3 @@
 
   </body>
 </html>
-
