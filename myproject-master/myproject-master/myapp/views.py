@@ -8,6 +8,7 @@ from .models import Employee, Questionnaire, DailyReport, DailyReportAnswer, Que
 from .serializers import EmployeesSerializer, QuestionnairesSerializer, DailyReportsSerializer, DailyReportAnswersSerializer
 from django.utils import timezone
 import requests
+from datetime import timedelta
 from django.utils.dateparse import parse_datetime,parse_date
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test,login_required
@@ -62,13 +63,33 @@ class Daily_reportsList(generics.ListAPIView):
     serializer_class = DailyReportsSerializer
 
 def show_daily_reports(request):
-    # レポートを取得
+    # フィルタ条件をリクエストから取得
+    username = request.GET.get('username')
+    report_date = request.GET.get('date')  # YYYY-MM-DD形式で送られることを想定
+    report_type = request.GET.get('type')
+
+    # ベースクエリ
     reports = DailyReport.objects.select_related('employee').all()
-    # 質問を取得
+
+    # username でフィルタリング
+    if username:
+        reports = reports.filter(employee__name__icontains=username)
+
+    # 日付でフィルタリング
+    if report_date:
+        try:
+            report_date_obj = timezone.datetime.strptime(report_date, "%Y-%m-%d").date()
+            reports = reports.filter(report_datetime__date=report_date_obj)
+        except ValueError:
+            pass  # 無効な日付の場合はフィルタリングをスキップ
+
+    # report_type でフィルタリング
+    if report_type:
+        reports = reports.filter(report_type__icontains=report_type)
+
+    # 質問と回答を取得
     questionnaires = Questionnaire.objects.all().order_by('id')
-    # 回答を取得して質問の順にソート
-    answers = DailyReportAnswer.objects.select_related(
-        'questionnaire').order_by('questionnaire__id')
+    answers = DailyReportAnswer.objects.select_related('questionnaire').order_by('questionnaire__id')
 
     # 質問の選択肢を取得して辞書に整理
     options = QuestionnaireOption.objects.all()
@@ -99,8 +120,7 @@ def show_daily_reports(request):
                         if not (min_threshold <= answer_value <= max_threshold):
                             threshold_exceeded = True
                     except ValueError:
-                        # 数値でない場合は閾値判定をスキップ
-                        pass
+                        pass  # 数値でない場合は閾値判定をスキップ
 
                 # 回答を選択肢のテキストに変換
                 try:
@@ -125,9 +145,10 @@ def show_daily_reports(request):
             'answers': report_answers
         })
 
+    # テンプレートにデータを渡す
     return render(request, 'myapp/show_daily_reports.html', {
         'reports': report_data,
-        'questionnaires': questionnaires, 
+        'questionnaires': questionnaires,
     })
 
 # 修正後のsubmit_answers関数
@@ -337,7 +358,7 @@ def show_own_answer(request):
         'reports': report_data,
     })
 
- #signup
+ #アカウント作成ビュー
 class SignUpView(CreateView):
     form_class = SignUpForm
     success_url = reverse_lazy("myapp:home")

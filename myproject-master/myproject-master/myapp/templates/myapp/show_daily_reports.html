@@ -86,40 +86,68 @@
         <h1 class="text-center">日報一覧</h1>
       </header>
 
-      <form class="mb-4">
-        <h2>表示するレポート列を選択</h2>
+      <div class="d-flex flex-row align-items-center justify-content-between">
+        <h2 class="ms-4">表示するレポート列を検索</h2>
+        <h2 class="me-4">表示するレポート列を選択</h2>
+      </div>
 
-        <!-- 基本情報のチェックボックス -->
-        <div class="accordion-section">
-          <div class="accordion-header mt-3">基本情報</div>
-          <div class="accordion-content">
-            <label><input type="checkbox" class="column-checkbox" checked /> レポートID</label><br>
-            <label><input type="checkbox" class="column-checkbox" checked /> 従業員ID</label><br>
-            <label><input type="checkbox" class="column-checkbox" checked /> レポート日時</label><br>
-            <label><input type="checkbox" class="column-checkbox" checked /> レポートタイプ</label><br>
-            <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label><br>
-            <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label><br>
+      <div class="d-flex flex-row align-items-center justify-content">
+                          <!-- フィルターフォームの追加 -->
+        <form method="get" action="{% url 'myapp:show_daily_reports' %}" class="mb-4 col-md-6">
+          
+          <div class="form-row">
+            <div class="col-md-10">
+              <label for="username">社員名:</label>
+              <input type="text" id="username" name="username" class="form-control" value="{{ request.GET.username }}">
+            </div>
+            <div class="col-md-10">
+              <label for="date">日付:</label>
+              <input type="date" id="date" name="date" class="form-control" value="{{ request.GET.date }}">
+            </div>
+            <div class="col-md-10">
+              <label for="type">レポートタイプ:</label>
+              <input type="text" id="type" name="type" class="form-control" value="{{ request.GET.type }}">
+            </div>
           </div>
-        </div>
+          <button type="submit" class="btn btn-primary mt-3">検索</button>
+        </form>
+  
 
-        <!-- 質問内容のチェックボックス -->
-        <div class="accordion-section">
-          <div class="accordion-header mt-3">質問内容</div>
-          <div class="accordion-content">
-            {% for question in questionnaires %}
-              <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label><br>
-            {% endfor %}
+        <form class="mb-4 col-md-6">
+  
+          <!-- 基本情報のチェックボックス -->
+          <div class="accordion-section">
+            <div class="accordion-header mt-4 mb-4">基本情報 ▼</div>
+            <div class="accordion-content">
+              <label><input type="checkbox" class="column-checkbox" checked /> レポートID</label><br>
+              <label><input type="checkbox" class="column-checkbox" checked /> 従業員ID</label><br>
+              <label><input type="checkbox" class="column-checkbox" checked /> レポート日時</label><br>
+              <label><input type="checkbox" class="column-checkbox" checked /> レポートタイプ</label><br>
+              <label><input type="checkbox" class="column-checkbox" checked /> 作成日時</label><br>
+              <label><input type="checkbox" class="column-checkbox" checked /> 更新日時</label><br>
+            </div>
           </div>
-        </div>
+  
+          <!-- 質問内容のチェックボックス -->
+          <div class="accordion-section">
+            <div class="accordion-header mt-4 mb-4">質問内容 ▼</div>
+            <div class="accordion-content">
+              {% for question in questionnaires %}
+                <label><input type="checkbox" class="column-checkbox" checked /> {{ question.title }}</label><br>
+              {% endfor %}
+            </div>
+          </div>
+  
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="mt-4">
+              <button type="button" class="btn btn-secondary" onclick="uncheckAllCheckboxes()">すべてのチェックを外す</button>
+              <button type="button" class="btn btn-success" onclick="saveColumnVisibility()">適用</button>
+            </div>
+            <a href="{% url 'myapp:export_reports_csv' %}" class="btn btn-primary ml-auto mt-4">CSVダウンロード</a>
+          </div>
+        </form>
+      </div>
 
-        <div class="d-flex align-items-center justify-content-between mt-3">
-          <div>
-            <button type="button" class="btn btn-secondary" onclick="uncheckAllCheckboxes()">すべてのチェックを外す</button>
-            <button type="button" class="btn btn-success" onclick="saveColumnVisibility()">適用</button>
-          </div>
-          <a href="{% url 'myapp:export_reports_csv' %}" class="btn btn-primary ml-auto">CSVダウンロード</a>
-        </div>
-      </form>
 
       <div class="table-responsive">
         <table class="table table-bordered table-striped">
