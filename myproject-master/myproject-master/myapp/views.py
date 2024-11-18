@@ -14,7 +14,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import user_passes_test,login_required
 from django.contrib import messages
 from .forms import EmployeeForm, QuestionnaireForm
-from django.db.models import Q
+from django.db.models import Q, OuterRef, Subquery, Exists
 from django.urls import reverse_lazy,reverse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView,LogoutView
@@ -255,6 +255,20 @@ def home(request):
     # 最新のレポートを1つだけ取得
     latest_report = DailyReport.objects.filter(employee=employee).order_by('-report_datetime').first()
 
+        # 今日の日付を取得
+    today = timezone.now().date()
+
+    # 管理者以外の従業員を取得
+    all_employees = Employee.objects.filter(employee_type='general')
+
+    # 今日のレポートを作成した従業員のIDリストを取得
+    reported_employee_ids = DailyReport.objects.filter(
+        report_datetime__date=today
+    ).values_list('employee_id', flat=True)
+
+    # レポートを作成していない従業員をフィルタリング
+    employees_without_reports = all_employees.exclude(id__in=reported_employee_ids)
+    
     if latest_report:
         # 最新のレポートに関連する回答を取得
         answers = DailyReportAnswer.objects.filter(daily_report=latest_report).select_related('questionnaire').order_by('questionnaire__id')
@@ -296,6 +310,7 @@ def home(request):
     # home.html にデータを渡す
     return render(request, 'myapp/home.html', {
         'report': report_data,
+        'employees_without_reports': employees_without_reports,
     })
 
 #自身の回答データ確認view
@@ -491,6 +506,8 @@ def update_user(request, user_id):
         return redirect('myapp:user_list')  # 更新後にユーザーリストにリダイレクト
 
     return render(request, 'myapp:update_user.html', {'user': user, 'employee': employee})
+
+
 
 
 def export_reports_csv(request):
